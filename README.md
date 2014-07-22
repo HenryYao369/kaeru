@@ -7,7 +7,7 @@ Eventually, these should be on a dedicated branch of this repository, but for no
 How to Update the Site
 ----------------------
 
-The user-facing website is at http://www.kaeru-lang.org, which is hosted on [Cornell Systems Lab](www.systems.cs.cornell.edu) servers.
+The user-facing website is at http://www.kaeru-lang.org, which is hosted on [Cornell Systems Lab](http://www.systems.cs.cornell.edu) servers.
 Use the following workflow to push updates to the main site:
 
 1. Clone this repository locally.
