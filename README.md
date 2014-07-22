@@ -14,6 +14,7 @@ Use the following workflow to push updates to the main site:
 2. Hack, hack, hack. View the site _locally_ until you're ready to make the changes live.
 3. Push your updates to the main repo with `git push origin master`.
 4. Log into the server via `ssh <your-name>@www.kaeru-lang.org`. Enter your username and password.
-5. Pull the new changes with `git pull origin master`
+5. Change into the Kaeru director with `cd /var/www/kaeru-lang.org`.
+6. Pull the new changes with `git pull origin master`.
 
 Enjoy!
