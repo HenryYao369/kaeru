@@ -10,11 +10,10 @@ How to Update the Site
 The user-facing website is at http://www.kaeru-lang.org, which is hosted on [Cornell Systems Lab](http://www.systems.cs.cornell.edu) servers.
 Use the following workflow to push updates to the main site:
 
-1. Clone this repository locally.
+1. Clone this repository locally. Move to the `web/` folder.
 2. Hack, hack, hack. View the site _locally_ until you're ready to make the changes live.
-3. Push your updates to the main repo with `git push origin master`.
-4. Log into the server via `ssh <your-name>@www.kaeru-lang.org`. Enter your username and password.
-5. Change into the Kaeru director with `cd /var/www/kaeru-lang.org`.
-6. Pull the new changes with `git pull origin master`.
+3. Run `make` to update the server files. Enter your password to `kaeru-lang.org` when prompted.
+4. Admire your changes at http://www.kaeru-lang.org
 
+Don't forget to push your updates to the main repo (`git push origin master`)
 Enjoy!
