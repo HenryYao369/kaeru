@@ -15,5 +15,5 @@ Use the following workflow to push updates to the main site:
 3. Run `make` to update the server files. Enter your password to `kaeru-lang.org` when prompted.
 4. Admire your changes at http://www.kaeru-lang.org
 
-Don't forget to push your updates to the main repo (`git push origin master`)
+Don't forget to push your updates to the main repo (`git push origin master`).
 Enjoy!
