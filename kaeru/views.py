@@ -1,9 +1,12 @@
 from django.conf import settings
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
 
 def index(request):
-    return HttpResponse("helloooo")
+    return render_to_response('index.html', {'index': True})
 
+def login(request):
+    return HttpResponse("goatse")
 
 # egs had a more dynamic way of loading/reading plugins. See virtualnotary if yer curious.
 # plugins = []
