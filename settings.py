@@ -1,5 +1,6 @@
-# Django settings for virtualnotary project.
 import os, sys, socket
+
+######################### Custom Kaeru Settings ##############################
 
 ISPRODUCTION=(not (sys.argv[0] == "manage.py" or sys.argv[0] == "./manage.py"))
 if ISPRODUCTION:
@@ -7,32 +8,75 @@ if ISPRODUCTION:
 else:
     TOPDIR = os.getcwd()
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
-ADMINS = (
-    ('Ross', 'ross@cs.cornell.edu'),
-    ('Fabian', 'fabianm@cs.cornell.edu'),
-    ('Ben', 'blg59@cornell.edu'),
-)
-
-MANAGERS = ADMINS
+if ISPRODUCTION:
+    SITE_NAME = 'http://kaeru-lang.org'
+else:
+    SITE_NAME = 'http://127.0.0.1:8000'
 
 # #key and certificate locations
 # MASTER_CERTIFICATE_LOCATION = TOPDIR +"/keys/MasterCertificate.pem"
 # CA_CERTIFICATE_LOCATION = TOPDIR +"/keys/CACertificate.pem"
 # CA_KEY_LOCATION = TOPDIR +"/keys/KeyPair.pem"
 
+# SESSION_COOKIE_DOMAIN="virtual-notary.org"
+# PAYPAL_RECEIVER_EMAIL = "root@virtual-notary.org"
+
+# EMAIL_HOST = 'cs.cornell.edu'
+# EMAIL_HOST_USER = ''
+# EMAIL_HOST_PASSWORD = ''
+# EMAIL_PORT = 25
+# EMAIL_USE_TLS = True
+
+# WEATHER_CHANNEL = 'yahoo'
+# TWITTER_CONSUMER_KEY=''
+# TWITTER_CONSUMER_SECRET=''
+# TWITTER_ACCESS_KEY=''
+# TWITTER_ACCESS_SECRET=''
+# BITCOIN_SEND_ADDRESS = ''
+# BITCOIN_RECEIVE_ADDRESS = ''
+# BITCOIN_RECEIVE_ADDRESS = ''
+# BITCOIN_TRANSACTION_AMOUNT = 0.0001
+# TWITTER_URL = 'https://twitter.com/VNotary'
+
+CORNELL_URL = 'http://www.cornell.edu/'
+COMPUTER_SCIENCE_DEPARTMENT_URL = 'http://www.cs.cornell.edu/'
+
+#RECAPTCHA
+# RECAPTCHA_THRESHOLD_TIMEOUT = 60 * 60 # in seconds
+# RECAPTCHA_THRESHOLD = 1000 # if increased to more than 10 increase DB field size to hold TimeStamp 
+# RECAPTCHA_REQUIRED = False
+# RECAPTCHA_PRIVATE_KEY = ''
+# RECAPTCHA_PUBLIC_KEY = ''
+
+
+######################## Django Settings #####################################
+
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+ADMINS = (
+    # ('Your Name', 'your_email@example.com'),
+    ('Ross', 'ross@cs.cornell.edu'),
+    ('Fabian', 'fabianm@cs.cornell.edu'),
+    ('Ben', 'blg59@cornell.edu'),
+)
+MANAGERS = ADMINS
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Same as virtualnotary
-        'NAME': TOPDIR + '/' + 'db.db',         # Or path to database file if using sqlite3.
-        'USER': '',                             # Not used with sqlite3.
-        'PASSWORD': '',                         # Not used with sqlite3.
-        'HOST': '',                             # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                             # Set to empty string for default. Not used with sqlite3.
+        'ENGINE'  : 'django.db.backends.sqlite3', # Options: 'postgresql_psycopg2', 'sqlite3', 'mysql', 'oracle'
+        'NAME'    : '%s/%s' % (TOPDIR, 'db.db'),            # Path to database file, if using sqlite3
+        # The following not used with sqlite3
+        'USER'    : '',
+        'PASSWORD': '',
+        'HOST'    : '',
+        'PORT'    : '',
     }
 }
+
+# Hosts/domain names that are valid for this site; required if DEBUG is False
+# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
+ALLOWED_HOSTS = []
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -56,6 +100,9 @@ USE_I18N = True
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale
 USE_L10N = True
+
+# If false, Django will not use timezone-aware datetimes.
+USE_TZ = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
@@ -89,8 +136,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-# ROOR_URLCONF = 'virtualnotary.urls'
-ROOT_URLCONF = 'kaeru-lang.org.urls'
+ROOT_URLCONF = 'urls'
+
+# WGSI application used by Django's runserver.
+WSGI_APPLICATION = 'kaeru.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -99,14 +148,6 @@ TEMPLATE_DIRS = (
     # '/var/www/virtualnotary/vnotary/templates',
     '/var/www/kaeru-lang.org/kaeru/templates',
 )
-
-# SESSION_COOKIE_DOMAIN="virtual-notary.org"
-# PAYPAL_RECEIVER_EMAIL = "root@virtual-notary.org"
-
-if ISPRODUCTION:
-    SITE_NAME = 'http://kaeru-lang.org'
-else:
-    SITE_NAME = 'http://127.0.0.1:8000'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -118,35 +159,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
-    # 'vnotary',
     'kaeru',
 )
 
-
-# EMAIL_HOST = 'cs.cornell.edu'
-# EMAIL_HOST_USER = ''
-# EMAIL_HOST_PASSWORD = ''
-# EMAIL_PORT = 25
-# EMAIL_USE_TLS = True
-
-# WEATHER_CHANNEL = 'yahoo'
-# TWITTER_CONSUMER_KEY=''
-# TWITTER_CONSUMER_SECRET=''
-# TWITTER_ACCESS_KEY=''
-# TWITTER_ACCESS_SECRET=''
-# BITCOIN_SEND_ADDRESS = ''
-# BITCOIN_RECEIVE_ADDRESS = ''
-# BITCOIN_RECEIVE_ADDRESS = ''
-# BITCOIN_TRANSACTION_AMOUNT = 0.0001
-# TWITTER_URL = 'https://twitter.com/VNotary'
-
-CORNELL_URL = 'http://www.cornell.edu/'
-COMPUTER_SCIENCE_DEPARTMENT_URL = 'http://www.cs.cornell.edu/'
-
-#RECAPTCHA
-RECAPTCHA_THRESHOLD_TIMEOUT = 60 * 60 # in seconds
-# XXX
-# RECAPTCHA_THRESHOLD = 1000 # if increased to more than 10 increase DB field size to hold TimeStamp 
-# RECAPTCHA_REQUIRED = False
-# RECAPTCHA_PRIVATE_KEY = ''
-# RECAPTCHA_PUBLIC_KEY = ''
+# See 'http://docs.djangoproject.com/en/dev/topics/logging' for logging help

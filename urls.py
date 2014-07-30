@@ -1,23 +1,15 @@
-from django.conf.urls.defaults import *
-from django.conf import settings
-from settings import ISPRODUCTION
+from django.conf.urls import patterns, include, url
 
 # Uncomment the next two lines to enable the admin:
-#from django.contrib import admin
-#admin.autodiscover()
+from django.contrib import admin
+# admin.autodiscover() # 2014-07-30: raises 500's when uncommented
 
-if ISPRODUCTION:
-    urlpatterns = patterns('',
-                           (r'^kaeru-lang.org/', include('kaeru.urls')),
-                           )
-else:
-    urlpatterns = patterns('',
-                           (r'^', include('kaeru.urls')),
-                           )
+urlpatterns = patterns('',
+    # Enables the admin
+    url(r'^admin/', include(admin.site.urls)),
+    # Uncomment the admin/doc line below to enable admin documentation:
+    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-if settings.DEBUG:
-    # this needs to be at the top level for the students when 
-    # running on their laptops. ???
-    urlpatterns += patterns('',
-                            (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.TOPDIR + '/static/'}),
-    )
+    # url(r'^$', include('kaeru.urls')),
+    url(r'^$', 'kaeru.views.index'),
+)
