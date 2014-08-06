@@ -141,11 +141,14 @@ ROOT_URLCONF = 'urls'
 # WGSI application used by Django's runserver.
 WSGI_APPLICATION = 'kaeru.wsgi.application'
 
+STATICFILES_DIRS = (
+    '/var/www/kaeru-lang.org/kaeru/static',
+)
+
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    # '/var/www/virtualnotary/vnotary/templates',
     '/var/www/kaeru-lang.org/kaeru/templates',
 )
 
