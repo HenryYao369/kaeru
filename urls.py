@@ -10,4 +10,6 @@ urlpatterns = patterns('',
 
     url(r'^$'       , 'kaeru.views.index'),
     url(r'^login/$' , 'kaeru.views.login'),
+    url(r'^about/$' , 'kaeru.views.about'),
+    url(r'^about/(?P<pagename>[a-z\-]+)/$', 'kaeru.views.about'),
 )
