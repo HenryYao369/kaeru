@@ -2,9 +2,13 @@ from django.conf import settings
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
+
+from kaeru.models import User
+
 import os
 
 # These pages should live in 'kaeru/templates/about/'
+# Alternatively, these names could live in a database
 ABOUT_PAGES = [
     'about',
     'documentation',
@@ -29,7 +33,26 @@ def index(request):
 def login(request):
     if request.method == "POST":
         # Try to log the user in, else show the 'create account' page
-        return render_to_response('login.html', {})
+        username = request.POST.get('username', None)
+        password = request.POST.get('password', None)
+        # Error fallback
+        if username is None:
+            errormsg = "Please enter your username."
+        elif password is None:
+            errormsg = "Please enter your password."
+        elif not User.objects.filter(name=username):
+            errormsg = "Username '%s' not found." % username
+        elif not User.objects.filter(name=username, favorite_color=password):
+            # TODO replace with passwordhash
+            errormsg = "Invalid password"
+        else:
+            # Find user, TODO save user to session.
+            # TODO httpresponseredirect
+            errormsg = None
+            user = User.objects.filter(name=username,favorite_color=password)[0]
+            return render_to_response('login.html', {"user": user})
+        return render_to_response('login.html', {"error_message": errormsg})
     else:
         # Show the login page
         return render_to_response('login.html', {})
+
