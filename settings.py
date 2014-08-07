@@ -130,9 +130,9 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware', # Manage sessions across requests
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware', # Associate user requests with sessions
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
@@ -151,8 +151,8 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'django.contrib.auth', # Authentication framework
+    'django.contrib.contenttypes', # Content type system, sets permissions on models
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
