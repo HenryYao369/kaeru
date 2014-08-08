@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth import authenticate
+from django.contrib import auth
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
@@ -37,15 +37,16 @@ def login(request):
         # Try to log the user in, else show the 'create account' page
         username = request.POST.get('username', None)
         password = request.POST.get('password', None)
-        user = authenticate(username=username, password=password)
+        user = auth.authenticate(username=username, password=password)
         if user is None:
             cookie['error_message'] = "Login failed."
         elif not (user.is_active):
             cookie['error_message'] = "Username/Password combo is valid, but the account has been disabled."
         else:
             # User is valid, active, and authenticated
+            auth.login(request, user)
             cookie['error_message'] = None
-            cookie['user'] = user
+            cookie['username'] = user.username
         return render_to_response('login.html', cookie)
     else:
         # Show the login page
