@@ -1,6 +1,6 @@
 {% if user %}
 
-    <h1>Welcome back, {{ user.name }}</h1>
+    <h1>Welcome back, {{ user.first_name }}</h1>
 
 {% else %}
 
@@ -10,7 +10,7 @@
         <p><strong>{{ error_message }}</strong></p>
     {% endif %}
 
-    <form action="/login" method="post">
+    <form action="/login/" method="post">
         {% csrf_token %}
         <p>Username:
             <input type="text" name="username" value="" placeholder="name or email" required>
@@ -18,5 +18,6 @@
         <p>Password:
             <input type="password" name="password" value="" placeholder="password" required>
         </p>
+        <input type="submit" value="Submit" />
     </form>
 {% endif %}
