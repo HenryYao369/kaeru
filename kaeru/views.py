@@ -12,14 +12,9 @@ import os
 # Alternatively, these names could live in a database
 ABOUT_PAGES = [
     'about',
-    'documentation',
-    'download',
     'faq',
-    'news',
     'people',
-    'publications',
     'support',
-    'tutorial',
 ]
 def about_view(request, pagename='about'):
     # Search for a matching template page, raise 404 if none found.
@@ -27,6 +22,21 @@ def about_view(request, pagename='about'):
         return render_to_response('about/%s.html' % pagename, {})
     else:
         raise Http404
+
+def documentation_view(request):
+    return render_to_response('documentation.html', {})
+
+def download_view(request):
+    return render_to_response('download.html', {})
+
+def news_view(request):
+    return render_to_response('news.html', {})
+
+def publications_view(request):
+    return render_to_response('publications.html', {})
+
+def tutorial_view(request):
+    return render_to_response('tutorial.html', {})
 
 def index_view(request):
     return render_to_response('index.html', {})
