@@ -9,7 +9,8 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')), #enables django admin docs
 
     url(r'^$'       , 'kaeru.views.index'),
-    url(r'^login/$' , 'kaeru.views.login'),
+    url(r'^login/$' , 'kaeru.views.login'), 
+    url(r'^signup/$' , 'kaeru.views.signup'),
     url(r'^about/$' , 'kaeru.views.about'),
     url(r'^about/(?P<pagename>[a-z\-]+)/$', 'kaeru.views.about'),
 )
