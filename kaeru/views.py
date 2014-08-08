@@ -58,6 +58,22 @@ def login(request):
         # Show the login page
         return render_to_response('login.html', cookie)
 
+def logout(request):
+    if request.user and request.user.is_authenticated:
+        # Successful logout
+        username = request.user.username
+        auth.logout(request)
+        return render_to_response('logout.html', {username: username})
+    else:
+        # Logout is a no-op. Nobody was logged in.
+        return render_to_response('logout.html', {})
+
+def secret(request):
+    # testing. Only logged-in users can see this
+    if not_auth:
+        redirect_to_login('secret/')
+    return 
+    
 def signup(request):
     cookie = _get_csrf_cookie(request)
     url = 'signup.html'
