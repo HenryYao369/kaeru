@@ -35,6 +35,8 @@ def _get_csrf_cookie(request):
     # Authenticate cookies for django csrf (cross-site reference) forms
     cookie = {}
     cookie.update(csrf(request)) # Required for csrf form protection
+    if hasattr(request, 'user'):
+        cookie['user'] = request.user
     return cookie
 
 def login_view(request):
@@ -52,7 +54,6 @@ def login_view(request):
         else:
             # User is valid, active, and authenticated
             auth.login(request, user)
-            cookie['username'] = user.username
             cookie['error_message'] = None
         return render_to_response('login.html', cookie)
     else:
@@ -60,11 +61,11 @@ def login_view(request):
         return render_to_response('login.html', cookie)
 
 def logout_view(request):
-    if request.user and request.user.is_authenticated:
+    if request.user.is_authenticated:
         # Successful logout
         username = request.user.username
         auth.logout(request)
-        return render_to_response('logout.html', {username: username})
+        return render_to_response('logout.html', {'username': username})
     else:
         # Logout is a no-op. Nobody was logged in.
         return render_to_response('logout.html', {})
@@ -85,10 +86,10 @@ def signup_view(request):
                    first_name = request.POST.get('first_name', None),
                    last_name  = request.POST.get('last_name', None),
             )
-        cookie['username'] = user.username
         if is_new:
             # Just made a new user. Welcome aboard!
             user.groups.add(auth.models.Group.objects.get(name="KaeruUsers"))
+            cookie['signup_success'] = True
             return render_to_response(url, cookie)
         else:
             # Existing user. Welcome back!

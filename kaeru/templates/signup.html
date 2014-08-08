@@ -1,6 +1,6 @@
-{% if username %}
+{% if signup_success %}
 
-    <h1>Welcome to Kaeru, {{ username }}</h1>
+    <h1>Welcome to Kaeru, {{ user.username }}</h1>
     <p>Read the <a href="/about/tutorial/">tutorial</a> to get started</p>.
 
 {% else %}
