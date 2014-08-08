@@ -165,5 +165,3 @@ INSTALLED_APPS = (
 )
 
 LOGIN_URL = "/login/"
-
-# See 'http://docs.djangoproject.com/en/dev/topics/logging' for logging help
