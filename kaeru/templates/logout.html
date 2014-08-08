@@ -1,9 +1,15 @@
-{% if username %}
+{% extends "base.html" %}
 
-    <p>Successfully logged out user {{ username }}. Bye now!</p>
-
-{% else %}
-
-    <p>Logged out.</p>
-
-{% endif %}
+{% block content %}
+    
+    {% if username %}
+    
+        <p>Successfully logged out user {{ username }}. Bye now!</p>
+    
+    {% else %}
+    
+        <p>Logged out.</p>
+    
+    {% endif %}
+    
+{% endblock %}

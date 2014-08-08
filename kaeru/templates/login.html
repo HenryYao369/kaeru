@@ -1,26 +1,30 @@
-{% if user.is_authenticated %}
+{% extends "base.html" %}
 
-    <h1>Welcome back, {{ user.username }}</h1>
-
-{% else %}
-
-<h1>Log in to Kaeru</h1>
-
-    {% if error_message %}
-        <p><strong>{{ error_message }}</strong></p>
+{% block content %}
+    {% if user.is_authenticated %}
+    
+        <h1>Welcome back, {{ user.username }}</h1>
+    
+    {% else %}
+    
+    <h1>Log in to Kaeru</h1>
+    
+        {% if error_message %}
+            <p><strong>{{ error_message }}</strong></p>
+        {% endif %}
+    
+        <form action="/login/" method="post">
+            {% csrf_token %}
+            <p>Username:
+                <input type="text" name="username" value="" placeholder="name or email" required>
+            </p>
+            <p>Password:
+                <input type="password" name="password" value="" placeholder="password" required>
+            </p>
+            <input type="submit" value="Submit" />
+        </form>
+        <p>
+            Don't have an account? <a href="/signup/">Create one</a>.
+        </p>
     {% endif %}
-
-    <form action="/login/" method="post">
-        {% csrf_token %}
-        <p>Username:
-            <input type="text" name="username" value="" placeholder="name or email" required>
-        </p>
-        <p>Password:
-            <input type="password" name="password" value="" placeholder="password" required>
-        </p>
-        <input type="submit" value="Submit" />
-    </form>
-    <p>
-        Don't have an account? <a href="/signup/">Create one</a>.
-    </p>
-{% endif %}
+{% endblock %}
