@@ -82,18 +82,21 @@ def signup_view(request):
         user, is_new = auth.models.User.objects.get_or_create(
                    username   = request.POST.get('username', None),
                    email      = request.POST.get('email', None),
-                   password   = request.POST.get('password', None),
                    first_name = request.POST.get('first_name', None),
                    last_name  = request.POST.get('last_name', None),
             )
         if is_new:
             # Just made a new user. Welcome aboard!
+            user.set_password(request.POST.get('password', None))
             user.groups.add(auth.models.Group.objects.get(name="KaeruUsers"))
+            user.save()
             cookie['signup_success'] = True
+            cookie['user'] = user
             return render_to_response(url, cookie)
         else:
-            # Existing user. Welcome back!
-            return render_to_response('login.html', cookie)
+            # Existing user.
+            cookie['error_message'] = "Error: username already taken."
+            return render_to_response(url, cookie)
     else:
         # Show the sign up page
         return render_to_response(url, cookie)
