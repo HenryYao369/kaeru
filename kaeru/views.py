@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
@@ -68,11 +69,9 @@ def logout_view(request):
         # Logout is a no-op. Nobody was logged in.
         return render_to_response('logout.html', {})
 
+@login_required
 def secret_view(request):
-    # testing. Only logged-in users can see this
-    if not_auth:
-        redirect_to_login('secret/')
-    return 
+    return render_to_response('secret.html', {})
     
 def signup_view(request):
     cookie = _get_csrf_cookie(request)
