@@ -8,11 +8,11 @@ urlpatterns = patterns('',
     url(r'^admin/'  , include(admin.site.urls)), # enables django admin
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')), #enables django admin docs
 
-    url(r'^$'       , 'kaeru.views.index'),
-    url(r'^login/$' , 'kaeru.views.login'), 
-    url(r'^logout/$' , 'kaeru.views.logout'), 
-    url(r'^secret/$' , 'kaeru.views.secret'), 
-    url(r'^signup/$' , 'kaeru.views.signup'),
-    url(r'^about/$' , 'kaeru.views.about'),
-    url(r'^about/(?P<pagename>[a-z\-]+)/$', 'kaeru.views.about'),
+    url(r'^$'       , 'kaeru.views.index_view'),
+    url(r'^login/$' , 'kaeru.views.login_view'), 
+    url(r'^logout/$' , 'kaeru.views.logout_view'), 
+    url(r'^secret/$' , 'kaeru.views.secret_view'), 
+    url(r'^signup/$' , 'kaeru.views.signup_view'),
+    url(r'^about/$' , 'kaeru.views.about_view'),
+    url(r'^about/(?P<pagename>[a-z\-]+)/$', 'kaeru.views.about_view'),
 )

@@ -20,14 +20,14 @@ ABOUT_PAGES = [
     'support',
     'tutorial',
 ]
-def about(request, pagename='about'):
+def about_view(request, pagename='about'):
     # Search for a matching template page, raise 404 if none found.
     if pagename in ABOUT_PAGES:
         return render_to_response('about/%s.html' % pagename, {})
     else:
         raise Http404
 
-def index(request):
+def index_view(request):
     return render_to_response('index.html', {})
 
 def _get_csrf_cookie(request):
@@ -36,7 +36,7 @@ def _get_csrf_cookie(request):
     cookie.update(csrf(request)) # Required for csrf form protection
     return cookie
 
-def login(request):
+def login_view(request):
     # Log existing user into the system
     cookie = _get_csrf_cookie(request)
     if request.method == "POST":
@@ -58,7 +58,7 @@ def login(request):
         # Show the login page
         return render_to_response('login.html', cookie)
 
-def logout(request):
+def logout_view(request):
     if request.user and request.user.is_authenticated:
         # Successful logout
         username = request.user.username
@@ -68,13 +68,13 @@ def logout(request):
         # Logout is a no-op. Nobody was logged in.
         return render_to_response('logout.html', {})
 
-def secret(request):
+def secret_view(request):
     # testing. Only logged-in users can see this
     if not_auth:
         redirect_to_login('secret/')
     return 
     
-def signup(request):
+def signup_view(request):
     cookie = _get_csrf_cookie(request)
     url = 'signup.html'
     if request.method == "POST":
