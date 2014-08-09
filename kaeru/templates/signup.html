@@ -27,6 +27,7 @@
             </p>
             <p>Username*:
                 <input type="text" name="username" value="" placeholder="Your username" required />
+                {% if duplicate_username %}Sorry, that username is unavailable.{% endif %}
             </p>
             <p>Password*:
                 <input type="password" name="password" value="" placeholder="password" required />

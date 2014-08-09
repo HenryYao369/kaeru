@@ -53,7 +53,7 @@ def login_view(request):
     # Log existing user into the system
     cookie = _get_csrf_cookie(request)
     if request.method == "POST":
-        # Try to log the user in, else show the 'create account' page
+        # Try to log the user in.
         username = request.POST.get('username', None)
         password = request.POST.get('password', None)
         user = auth.authenticate(username=username,password=password)
@@ -62,12 +62,11 @@ def login_view(request):
         elif not (user.is_active):
             cookie['error_message'] = "Username/Password combo is valid, but the account has been disabled."
         else:
-            # User is valid, active, and authenticated
+            # User is valid, active, and authenticated. Log in.
             auth.login(request, user)
-            cookie['error_message'] = None
         return render_to_response('login.html', cookie)
     else:
-        # Show the login page
+        # Show the login page.
         return render_to_response('login.html', cookie)
 
 def logout_view(request):
@@ -109,7 +108,7 @@ def signup_view(request):
             return render_to_response(url, cookie)
         else:
             # Existing user.
-            cookie['error_message'] = "Error: username already taken."
+            cookie['duplicate_username'] = True
             return render_to_response(url, cookie)
     else:
         # Show the sign up page
