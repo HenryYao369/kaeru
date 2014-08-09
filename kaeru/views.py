@@ -89,19 +89,23 @@ def signup_view(request):
     url = 'signup.html'
     if request.method == "POST":
         # Create the account
+        raw_username = request.POST.get('username', None)
+        raw_password = request.POST.get('password', None)
         user, is_new = auth.models.User.objects.get_or_create(
-                   username   = request.POST.get('username', None),
+                   username   = raw_username,
                    email      = request.POST.get('email', None),
                    first_name = request.POST.get('first_name', None),
                    last_name  = request.POST.get('last_name', None),
             )
         if is_new:
             # Just made a new user. Welcome aboard!
-            user.set_password(request.POST.get('password', None))
+            user.set_password(raw_password)
             user.groups.add(auth.models.Group.objects.get(name="KaeruUsers"))
             user.save()
             cookie['signup_success'] = True
             cookie['user'] = user
+            # log in
+            auth.login(request, auth.authenticate(username=raw_username, password=raw_password))
             return render_to_response(url, cookie)
         else:
             # Existing user.
