@@ -1,0 +1,45 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>{% block title %}Kaeru means change{% endblock %}</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'kaeru/style.css' %}" />
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'kaeru/icons/cornell.ico' %}" />
+    </head>
+
+    <body>
+        <div id="nav">
+            <span><a href="/">Home</a></span>
+            <span><a href="/about/">About</a></span>
+            <span><a href="/about/faq/">FAQ</a></span>
+            <span><a href="/about/people/">People</a></span>
+            <span><a href="/about/support/">Support</a></span>
+            <span><a href="/documentation/">Documentation</a></span>
+            <span><a href="/download/">Download</a></span>
+            <span><a href="/news/">News</a></span>
+            <span><a href="/publications/">Publications</a></span>
+            <span><a href="/secret/">Members Only</a></span>
+            <span><a href="/tutorial/">Tutorial</a></span>
+        </div>
+
+        <div id="login">
+            <span><a href="/login/">Sign In</a></span>
+            <span><a href="/logout/">Log out</a></span>
+        </div>
+
+        <div id="header">
+          {% block header %}{% endblock %}
+        </div>
+
+        <div id="content">
+          {% block content %}{% endblock %}
+        </div>
+
+        <div id="footer">
+          {% block footer %}{% endblock %}
+        </div>
+
+    </body>
+
+</html>

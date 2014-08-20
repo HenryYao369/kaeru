@@ -11,6 +11,5 @@
 
 ## Directories
 
-* `media/` Not using this yet. Media files for Kaeru.
-* `static/` Static pages like the stylesheets.
+* `static/` Static pages like the stylesheets and images.
 * `templates/` Web page templates. Django generates HTML from these files.

@@ -130,9 +130,9 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware', # Manage sessions across requests
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware', # Associate user requests with sessions
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
@@ -141,9 +141,7 @@ ROOT_URLCONF = 'urls'
 # WGSI application used by Django's runserver.
 WSGI_APPLICATION = 'kaeru.wsgi.application'
 
-STATICFILES_DIRS = (
-    '/var/www/kaeru-lang.org/kaeru/static',
-)
+STATIC_URL = '/static/'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -153,11 +151,12 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'django.contrib.auth', # Authentication framework
+    'django.contrib.contenttypes', # Content type system, sets permissions on models
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
+    'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
@@ -165,4 +164,4 @@ INSTALLED_APPS = (
     'kaeru',
 )
 
-# See 'http://docs.djangoproject.com/en/dev/topics/logging' for logging help
+LOGIN_URL = "/login/"

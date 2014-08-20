@@ -1,36 +1,17 @@
-{% load static %}
+{% extends "base.html" %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'kaeru/style.css' %}" />
+{% block header %}
+    <h1>
+        <a href="/">
+            <span class="systemname">Kaeru</span>: Gradual Typing for Tadpoles
+        </a>
+    </h1>
+{% endblock %}
 
-<h1>
-    <a href="http://kaeru-lang.org/">
-        <span class="systemname">(templates/) Kaeru</span>: Gradual Typing for Tadpoles
-    </a>
-</h1>
+{% block content %}
+    <p>Kaeru is a great new language</p>
+{% endblock %}
 
-    <div id="nav">
-        <span><a href="http://kaeru-lang.org/">Home</a></span>
-        <span><a href="http://kaeru-lang.org/about/">About</a></span>
-        <span><a href="http://kaeru-lang.org/performance/">Performance</a></span>
-        <span><a href="http://kaeru-lang.org/download/">Download</a></span>
-        <span><a href="http://kaeru-lang.org/papers/">Papers</a></span>
-        <span><a href="http://kaeru-lang.org/support/">Support</a></span>
-        <span><a href="http://kaeru-lang.org/people/">People</a></span>
-    </div><!-- nav -->
-    <div id="more-nav">
-        <span><a href="http://kaeru-lang.org/news/">News</a></span>
-        <span><a href="http://kaeru-lang.org/doc/tutorial/">Tutorial</a></span>
-        <span><a href="http://kaeru-lang.org/doc/">Documentation</a></span>
-        <span><a href="http://kaeru-lang.org/faq/">FAQ</a></span>
-        <span><a href="http://kaeru-lang.org/contributors/">Contributors</a></span>
-        <!--<span><a href="https://github.com/rescrv/HyperDex/">GitHub</a></span>-->
-        <!--<span><a href="https://github.com/rescrv/HyperDex/issues?sort=created&direction=desc&state=open&page=1">Bug Tracker</a></span>-->
-    </div><!-- more-nav -->
-
-    <div id="bd">
-        <p>Kaeru is a great new language</p>
-    </div><!-- bd -->
-
-    <div id="ft">
-      <p>We don't have a Copyright yet. &copy; <a href="http://www.cs.cornell.edu/">Cornell University</a></p>
-    </div><!-- ft -->
+{% block footer %}
+    <p>We don't have a Copyright yet. &copy; <a href="http://www.cs.cornell.edu/">Cornell University</a></p>
+{% endblock %}
