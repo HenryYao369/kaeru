@@ -1,0 +1,32 @@
+<VirtualHost *:80>
+        ServerName kaeru-lang.org
+        ServerAdmin ben@systems.cs.cornell.edu
+
+	DocumentRoot /var/www/kaeru-lang.org
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride None
+	</Directory>
+	<Directory /var/www/kaeru-lang.org/kaeru/static>
+		Options Indexes FollowSymLinks MultiViews Includes
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+	XBitHack on
+
+	ErrorLog ${APACHE_LOG_DIR}/kaeru-lang.org-error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	#LogLevel warn
+	LogLevel debug
+
+	CustomLog ${APACHE_LOG_DIR}/kaeru-lang.org-access.log combined
+
+	Alias /static "/var/www/kaeru-lang.org/kaeru/static"
+
+	WSGIProcessGroup syslab
+	WSGIScriptAlias / /var/www/kaeru-lang.org/kaeru-lang.org.wsgi
+
+</VirtualHost>
