@@ -1,4 +1,3 @@
-from kaeru.model import User
+#from kaeru.model import User
 from django.contrib import admin
-
-admin.site.register(User)
+#admin.site.register(User)
