@@ -2,7 +2,8 @@ import os, sys, socket
 
 ######################### Custom Kaeru Settings ##############################
 
-ISPRODUCTION=(not (sys.argv[0] == "manage.py" or sys.argv[0] == "./manage.py"))
+#ISPRODUCTION=(not (sys.argv[0] == "manage.py" or sys.argv[0] == "./manage.py"))
+ISPRODUCTION= False
 if ISPRODUCTION:
     TOPDIR = "/var/www/kaeru-lang.org/"
 else:
@@ -165,3 +166,4 @@ INSTALLED_APPS = (
 )
 
 LOGIN_URL = "/login/"
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
