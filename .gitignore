@@ -7,3 +7,7 @@
 *.pyc
 
 db\.db
+
+db\.txt
+
+sqlite3.\exe
