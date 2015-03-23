@@ -5,6 +5,7 @@ VERSIONMAJOR=1
 VERSIONMINOR=0
 VERSION=('%d.%d' % (VERSIONMAJOR, VERSIONMINOR))
 
+# Backing model for a user-created project
 class Project(models.Model):
 	creator = models.ForeignKey(User, default=None, related_name="project_creator") # Original creator
 	contributors = models.ManyToManyField(User, related_name="project_contributors") # Contributors to the project
