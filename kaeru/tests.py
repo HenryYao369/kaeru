@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.utils import timezone
 from django.contrib.auth.models import User
+from kaeru.models import Project
 
 class LoginTest(TestCase):
 
@@ -82,3 +83,51 @@ class UrlsTest(TestCase):
         """
         response = self.client.get('/about/')
         self.assertEqual(200, response.status_code)
+
+# Testing adding projects as a user
+class ProjectTest(TestCase):
+
+    # Pre-test setup of a user
+    def setUp(self):
+        User(
+            username="anon",
+            first_name="anon",
+            last_name="anon",
+            email="anon@anon.anon",
+            password="a2e6fff81614f079077573df38ad10a1",
+         ).save()
+
+    # Test user creation of projects
+    def test_create_project(self):
+
+        user = User.objects.get(username="anon")
+
+        # Creating a project under anon
+        Project(
+            name="MyFirstProject", 
+            creator=user,
+            create_date=timezone.now()
+         ).save()
+
+        # Check if project has been added to database
+        project = Project.objects.all().filter(creator=user)[0]
+        self.assertEqual("MyFirstProject",project.name);
+
+    # Test listing contributors of projects
+    def test_project_contributors(self):
+
+        user = User.objects.get(username="anon")
+
+        # Creating a project under anon and adding anon as a contributor
+        p = Project(
+            name="MyFirstProject", 
+            creator=user,
+            create_date=timezone.now()
+         )
+        p.save()
+        p.contributors.add(user)
+        p.save()
+
+        # Check if anon is a contributor
+        project = Project.objects.all().filter(creator=user)[0]
+        self.assertEqual("anon",project.contributors.all()[0].username);
