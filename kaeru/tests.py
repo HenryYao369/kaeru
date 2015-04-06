@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.utils import timezone
 from django.contrib.auth.models import User
 from kaeru.models import Project
+from kaeru.models import Code
 
 class LoginTest(TestCase):
 
@@ -131,3 +132,45 @@ class ProjectTest(TestCase):
         # Check if anon is a contributor
         project = Project.objects.all().filter(creator=user)[0]
         self.assertEqual("anon",project.contributors.all()[0].username);
+
+	#This function tests:
+	#1-creation of code object
+	#2-assignment of a project to it
+    def test_project_to_codes(self):
+        n = Code(
+            docID = "123456",
+            filePathAndName = "filename",
+            created = timezone.now()
+        )
+        n.save()
+        p = Project(
+            name="MyFirstProject", 
+            creator=User.objects.get(username="anon"),
+            create_date=timezone.now()
+        )
+        p.save()
+        n.projects.add(p)
+        n.save()
+        self.assertEqual(p.codes.all()[0].docID,"123456");
+        self.assertEqual(n.projects.all()[0].name,"MyFirstProject");
+
+    #This function tests:
+	#1-creation of code object
+	#2-assignment of a code object to project object
+    def test_codes_to_project(self):
+        n2 = Code(
+            docID = "123456",
+            filePathAndName = "filename",
+            created = timezone.now()
+        )
+        n2.save()
+        p2 = Project(
+            name="MyFirstProject", 
+            creator=User.objects.get(username="anon"),
+            create_date=timezone.now()
+        )
+        p2.save()
+        p2.codes.add(n2)
+        p2.save()
+        self.assertEqual(p2.codes.all()[0].docID,"123456");
+        self.assertEqual(n2.projects.all()[0].name,"MyFirstProject");
