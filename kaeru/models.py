@@ -19,7 +19,6 @@ class Project(models.Model):
         return self.name
 
 class Code(models.Model):
-	docID = models.CharField(max_length=6) # Primary key identifier for each code document
 	filePathAndName = models.CharField(max_length=124) # Name of the project
 	created = models.DateTimeField('creation date') # Date when the project is created
 	#code-project:	many-many
