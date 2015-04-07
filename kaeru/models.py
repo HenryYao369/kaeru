@@ -17,3 +17,4 @@ class Project(models.Model):
     # () -> String
     def __str__(self):
         return self.name
+
