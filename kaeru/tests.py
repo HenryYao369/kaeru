@@ -138,7 +138,6 @@ class ProjectTest(TestCase):
 	#2-assignment of a project to it
     def test_project_to_codes(self):
         n = Code(
-            docID = "123456",
             filePathAndName = "filename",
             created = timezone.now()
         )
@@ -158,7 +157,6 @@ class ProjectTest(TestCase):
 	#2-assignment of a code object to project object
     def test_codes_to_project(self):
         n2 = Code(
-            docID = "123456",
             filePathAndName = "filename",
             created = timezone.now()
         )
