@@ -151,7 +151,6 @@ class ProjectTest(TestCase):
         p.save()
         n.projects.add(p)
         n.save()
-        self.assertEqual(p.codes.all()[0].docID,"123456");
         self.assertEqual(n.projects.all()[0].name,"MyFirstProject");
 
     #This function tests:
@@ -172,5 +171,4 @@ class ProjectTest(TestCase):
         p2.save()
         p2.codes.add(n2)
         p2.save()
-        self.assertEqual(p2.codes.all()[0].docID,"123456");
         self.assertEqual(n2.projects.all()[0].name,"MyFirstProject");
