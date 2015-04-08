@@ -24,9 +24,12 @@ class Code(models.Model):
 	#code-project:	many-many
 	projects = models.ManyToManyField(Project, related_name="codes")
 	#TODO:	code-pages:		many-many
-	
+	page=models.ForeignKey(Page);
+
 	def __str__(self):
 		return self.name
+
+
 
 class Page(models.Model):
     page_name = models.CharField(max_length=200)   #Page name
@@ -35,7 +38,6 @@ class Page(models.Model):
 
     project = models.ForeignKey(Project)
     user = models.ForeignKey(User)
-    code = models.OneToOneField(Code)
 
     def __str__(self):
         return self.name

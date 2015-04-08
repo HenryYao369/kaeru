@@ -192,10 +192,10 @@ class ProjectTest(TestCase):
         )
         page.save()
         page.project=p
-        page.code=c
+        page.code_set.add(c)
         page.save()
         self.assertEqual(page.project.name,"MyFirstProject")
-        self.assertEqual(page.code.filePathAndName,"filename")
+        self.assertEqual(page.code_set.all()[0].filePathAndName,"filename")
 
     def test_page_to_project(self):
         p = Project(
