@@ -3,65 +3,43 @@
 <html lang="en">
 
 <head>
-    <title>{% block title %}Kaeru means change{% endblock %}</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'kaeru/style.css' %}" />
-    <link rel="shortcut icon" type="image/x-icon" href="{% static 'kaeru/icons/cornell.ico' %}" />
+  <title>{% block title %}Kaeru means change{% endblock %}</title>
+  <link rel="stylesheet" type="text/css" href="{% static 'kaeru/style.css' %}" />
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'kaeru/icons/cornell.ico' %}" />
 </head>
 
 <body>
 
-    <section id="slide-1" class="homeSlide">
-        <div class="bcg">
-            <div class="hsContainer">
-                <div class="hsContent">
+  <!--Naviation Bar-->
+  <nav>
+    {% block nav %}
+    <ul>
+      <li><h1 class="home-button"><a href="/">Kaeru:</a></h1></li>
+      <li><a href="/documentation/">Documentation</a></li>
+      <li id="login">
+        {% block login %}
+        <span><a href="/login/">Sign In</a></span>
+        <span><a href="/logout/">Log out</a></span>
+        {% endblock %}
+      </li>
+    </ul>
+    {% endblock %}
+  </nav>
 
-                    <div id="nav">
-                        {% block nav %}
-                        <h1 class="home-button"><a href="/">Kaeru:</a></h1>
-                        <span>Gradual Typing for Tadpoles</span>
-                        <span><a href="/documentation/">Documentation</a></span>
-                        <div id="login">
-                            {% block login %}
-                            <span><a href="/login/">Sign In</a></span>
-                            <span><a href="/logout/">Log out</a></span>
-                            {% endblock %}
-                        </div>
-                        {% endblock %}
-                    </div>
+  <div id="content">
+    {% block content %}{% endblock %}
+  </div>
 
-                    <div id="header">
-                      {% block header %}{% endblock %}
-                  </div>
+  <div id="footer">
+    {% block footer %}
+    <span><a href="/about/people/">People</a></span>
+    <span>We don't have a Copyright yet. &copy; <a href="http://www.cs.cornell.edu/">Cornell University</a></span>
+    {% endblock %}
+  </div>
 
-                  <div id="content">
-                      {% block content %}{% endblock %}
-                  </div>
-
-                  <div id="footer">
-                      {% block footer %}
-                      <span><a href="/about/people/">People</a></span>
-                      <span>We don't have a Copyright yet. &copy; <a href="http://www.cs.cornell.edu/">Cornell University</a></span>
-                      {% endblock %}
-                  </div>
-
-              </div>
-          </div>
-      </div>
-  </section>
-
-  <section id="slide-2" class="homeSlide">
-    <div class="bcg">
-        <div class="hsContainer">
-            <div class="hsContent">
-                <h2>This is where the user can try Kaeru.</h2>
-            </div>
-        </div>
-    </div>
-</section>
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
-<script src="{% static 'kaeru/js/_main.js' %}"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+  <script src="{% static 'kaeru/js/_main.js' %}"></script>
 
 </body>
 
