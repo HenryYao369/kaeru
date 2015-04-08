@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from kaeru.models import Project
 from kaeru.models import Code
+from kaeru.models import Page
 
 class LoginTest(TestCase):
 
@@ -170,3 +171,62 @@ class ProjectTest(TestCase):
         p2.codes.add(n2)
         p2.save()
         self.assertEqual(n2.projects.all()[0].name,"MyFirstProject");
+
+    def test_projectcode_to_page(self):
+        p = Project(
+            name="MyFirstProject",
+            creator=User.objects.get(username="anon"),
+            create_date=timezone.now()
+        )
+        p.save()
+        c = Code(
+            filePathAndName="filename",
+            created=timezone.now()
+
+        )
+        c.save()
+        page = Page(
+            page_name="pagename",
+            page_create_date=timezone.now(),
+            page_modify_date=timezone.now(),
+        )
+        page.save()
+        page.project=p
+        page.code_set.add(c)
+        page.save()
+        self.assertEqual(page.project.name,"MyFirstProject")
+        self.assertEqual(page.code_set.all()[0].filePathAndName,"filename")
+
+    def test_page_to_project(self):
+        p = Project(
+            name="MyFirstProject",
+            creator=User.objects.get(username="anon"),
+            create_date=timezone.now()
+        )
+        p.save()
+        page = Page(
+            page_name="pagename",
+            page_create_date=timezone.now(),
+            page_modify_date=timezone.now(),
+        )
+        page.save()
+        p.page_set.add(page)
+        p.save()
+        self.assertEqual(p.page_set.all()[0].page_name,"pagename")
+
+    def test_page_to_code(self):
+        c = Code(
+            filePathAndName="filename",
+            created=timezone.now()
+
+        )
+        c.save()
+        page = Page(
+            page_name="pagename",
+            page_create_date=timezone.now(),
+            page_modify_date=timezone.now(),
+        )
+        page.save()
+        c.page=page
+        c.save()
+        self.assertEqual(c.page.page_name,"pagename")
