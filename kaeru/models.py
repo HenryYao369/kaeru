@@ -24,7 +24,7 @@ class Code(models.Model):
 	#code-project:	many-many
 	projects = models.ManyToManyField(Project, related_name="codes")
 	#TODO:	code-pages:		many-many
-	#page=models.ForeignKey(Page); FM: temporary fix
+	page=models.ForeignKey(Page);
 
 	def __str__(self):
 		return self.name
