@@ -7,8 +7,8 @@
 *.pyc
 
 db\.db
+.idea
 
 db\.txt
 
 sqlite3.\exe
-.idea
