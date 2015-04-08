@@ -17,3 +17,13 @@ class Project(models.Model):
     # () -> String
     def __str__(self):
         return self.name
+
+class Code(models.Model):
+	filePathAndName = models.CharField(max_length=124) # Name of the project
+	created = models.DateTimeField('creation date') # Date when the project is created
+	#code-project:	many-many
+	projects = models.ManyToManyField(Project, related_name="codes")
+	#TODO:	code-pages:		many-many
+	
+	def __str__(self):
+		return self.name
