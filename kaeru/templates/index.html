@@ -1,17 +1,46 @@
 {% extends "base.html" %}
 
-{% block header %}
-    <h1>
-        <a href="/">
-            <span class="systemname">Kaeru</span>: Gradual Typing for Tadpoles
-        </a>
-    </h1>
-{% endblock %}
-
 {% block content %}
-    <p>Kaeru is a great new language</p>
-{% endblock %}
 
-{% block footer %}
-    <p>We don't have a Copyright yet. &copy; <a href="http://www.cs.cornell.edu/">Cornell University</a></p>
+<div class="row" data-equalizer>
+  <div id="kaeru-info" class="small-6 columns panel" data-equalizer-watch>
+    <p>Kaeru is a great new language</p>
+</div>
+<div class="small-6 columns panel" data-equalizer-watch>
+    {% if signup_success %}
+
+    <h1>Welcome to Kaeru, {{ user.username }}</h1>
+
+    {% else %}
+
+    <h1 id="signup-header">Sign up for Kaeru</h1>
+
+    <p>Creating an account helps you track your progress.</p>
+
+    <p>Fields marked with an asterisk (*) are required.</p>
+    <form action="/signup/" method="post">
+        {% csrf_token %}
+        <p>First Name:
+            <input type="text" name="first_name" value="" placeholder="Your first name" optional />
+        </p>
+        <p>Last Name:
+            <input type="text" name="last_name" value="" placeholder="Your last name" optional />
+        </p>
+        <p>Email:
+            <input type="text" name="email" value="" placeholder="Your favorite email address" optional />
+        </p>
+        <p>Username*:
+            <input type="text" name="username" value="" placeholder="Your username" required />
+            {% if duplicate_username %}Sorry, that username is unavailable.{% endif %}
+        </p>
+        <p>Password*:
+            <input type="password" name="password" value="" placeholder="password" required />
+        </p>
+        <input type="submit" value="Submit" />
+    </form>
+
+    {% endif %}
+</div>
+</div>
+
 {% endblock %}
