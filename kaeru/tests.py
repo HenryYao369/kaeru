@@ -61,30 +61,27 @@ class UrlsTest(TestCase):
         response = self.client.get('/')
         self.assertEqual(200, response.status_code)
 
-    def test_about_exists(self):
+    def test_documentation_exists(self):
         """
-        Check that each about page exists
+        Check that documentation page exists
         """
-        from kaeru.views import ABOUT_PAGES
-        for pagename in ABOUT_PAGES:
-            response = self.client.get('/about/%s/' % pagename)
-            self.assertEqual(200, response.status_code)
-
-    def test_about_404(self):
-        """
-        Raise an arbitrary 404 in the views.about function
-        """
-        from kaeru.views import ABOUT_PAGES
-        pagename = "".join(ABOUT_PAGES)
-        response = self.client.get('/about/%s/' % pagename)
-        self.assertEqual(404, response.status_code)
-
-    def test_about_default(self):
-        """
-        Check that default about page exists
-        """
-        response = self.client.get('/about/')
+        response = self.client.get('/documentation/')
         self.assertEqual(200, response.status_code)
+
+    def test_people_exists(self):
+        """
+        Check that people page exists
+        """
+        response = self.client.get('/people/')
+        self.assertEqual(200,response.status_code)
+
+    def test_404(self):
+        """
+        Raise an arbitrary 404
+        """
+        pagename = "arbitraryname"
+        response = self.client.get('/%s/' % pagename)
+        self.assertEqual(404, response.status_code)
 
 # Testing adding projects as a user
 class ProjectTest(TestCase):
