@@ -1,0 +1,15 @@
+#kaeru-info {
+    background: url("../img/blaster-master-frog.png") no-repeat left; 
+}
+
+.top-bar-section li a:not(.button) {
+    background: green !important;   
+}
+
+.top-bar-section li a:not(.button):hover {
+    background: gray !important;   
+}
+
+.title-area{
+    background-color: green !important;
+}
