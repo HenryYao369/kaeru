@@ -75,6 +75,13 @@ class UrlsTest(TestCase):
         response = self.client.get('/people/')
         self.assertEqual(200,response.status_code)
 
+    def test_ide_exists(self):
+        """
+        Check that IDE page exists
+        """
+        response = self.client.get('/ide/')
+        self.assertEqual(200,response.status_code)
+
     def test_404(self):
         """
         Raise an arbitrary 404

@@ -105,3 +105,7 @@ def index_view(request):
     else:
         # Show the sign up page
         return render_to_response(url, cookie)
+
+# TODO: Code that changes this view when you're logged in or not
+def ide_view(request):
+    return render_to_response('ide.html', {})
