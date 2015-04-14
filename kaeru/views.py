@@ -7,6 +7,9 @@ from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.core.context_processors import csrf
+from django.contrib.auth.models import User
+from kaeru.models import Project
+from django.utils import timezone
 
 import os
 
@@ -107,6 +110,29 @@ def index_view(request):
     else:
         # Show the sign up page
         return render_to_response(url, cookie)
+
+@login_required
+def projects_view(request):
+    
+    # Get information
+    cookie = _get_csrf_cookie(request)
+    username = request.user.username # Username info
+    user = User.objects.get(username=username)
+
+    # Add a new project model
+    if request.method == "POST":
+        projectname = request.POST.get('projectname', None)
+        if user is not None and projectname is not None:
+            Project(
+                name=projectname, 
+                creator=user,
+                create_date=timezone.now()
+             ).save()
+
+    # Display all project information for this user
+    cookie['username'] = username
+    cookie['projects'] = Project.objects.all().filter(creator=user) # All created projects
+    return render_to_response('projects.html', cookie)
 
 def signup_view(request):
     cookie = _get_csrf_cookie(request)

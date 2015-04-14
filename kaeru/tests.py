@@ -96,6 +96,30 @@ class ProjectTest(TestCase):
             password="a2e6fff81614f079077573df38ad10a1",
          ).save()
 
+    # Tests user creation of projects using the view
+    def test_create_project_view(self):
+
+        response = self.client.post('/signup/', {'username': 'dummyName',
+                                                'password': 'dummyPass',
+                                                'email': 'dummy@email.com',
+                                                'first_name': 'Dummy',
+                                                'last_name': 'Name'})
+        self.assertEqual(200, response.status_code)
+        user = User.objects.get(username="dummyName")
+
+        # Logging in as anon
+        response = self.client.post('/login/', {'username': 'dummyName',
+                                                'password': 'dummyPass'})
+        self.assertEqual(200, response.status_code)
+
+        # Creating a project as anon
+        response = self.client.post('/projects/', {'projectname': "MyFirstProject"})
+        self.assertEqual(200, response.status_code)
+
+        # Check if project has been added to database
+        project = Project.objects.all().filter(creator=user)[0]
+        self.assertEqual("MyFirstProject",project.name);
+
     # Test user creation of projects
     def test_create_project(self):
 
