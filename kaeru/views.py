@@ -128,13 +128,17 @@ def projects_view(request, urlusername=None, urlprojectname=None):
 
         # Add a new project model
         if request.method == "POST":
+            operation = request.POST.get('operation', None)
             projectname = request.POST.get('projectname', None)
             if user is not None and projectname is not None:
-                Project(
-                    name=projectname, 
-                    creator=user,
-                    create_date=timezone.now()
-                ).save()
+                if operation == 'delete': # Delete the given project
+                    Project.objects.all().filter(creator=user).filter(name=projectname).delete()
+                elif operation == 'add': # Add a new project
+                    Project(
+                        name=projectname, 
+                        creator=user,
+                        create_date=timezone.now()
+                     ).save()
 
         if (urlusername is None):
             cookie['username'] = username

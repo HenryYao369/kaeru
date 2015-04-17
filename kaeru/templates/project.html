@@ -7,6 +7,8 @@
     {% if iscreator %}
     <form action="/projects/{{ username }}/" method="post">
         {% csrf_token %}
+        <input type="hidden" name="operation" value="delete"> <!-- TODO: Change this at some point -->
+        <input type="hidden" name="projectname" value="{{ projectname }}"> <!-- TODO: Change this at some point -->
         <input type="submit" value="Delete" />
     </form>
     {% endif %}
