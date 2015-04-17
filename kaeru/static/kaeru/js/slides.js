@@ -12,10 +12,12 @@
 	
 	// Setup variables
 	$window = $(window);
-	$slide = $('.homeSlide');
+	$slide = $('#directory');
+	$slide2 = $('#code');
+	$slide3 = $('#output');
 
 	// Get window size
-	winH = $window.height();
+	winH = $window.height() - $('.top-bar').height();
 	    
 	// Keep minimum height 550
 	if(winH <= 550) {
@@ -24,5 +26,8 @@
 	    
 	// Resize our slides
 	$slide.height(winH);
+	$slide2.height(winH);
+	$slide3.height(winH);
 		
 } )( jQuery );
+

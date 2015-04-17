@@ -1,3 +1,5 @@
+from django.contrib.auth.models import Group as DjangoGroup
+from django.contrib.auth.models import User as DjangoUser
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
@@ -109,3 +111,49 @@ def index_view(request):
 # TODO: Code that changes this view when you're logged in or not
 def ide_view(request):
     return render_to_response('ide.html', {})
+    
+def signup_view(request):
+    cookie = _get_csrf_cookie(request)
+    url = 'signup.html'
+    if request.method == "POST":
+        # Create the account
+        raw_username = request.POST.get('username', None)
+        raw_password = request.POST.get('password', None)
+        new_user, is_new = auth.models.User.objects.get_or_create(
+                   username   = raw_username,
+                   email      = request.POST.get('email', None),
+                   first_name = request.POST.get('first_name', None),
+                   last_name  = request.POST.get('last_name', None),
+            )
+
+        if is_new:
+            # Just made a new user. Welcome aboard!
+            new_user.set_password(raw_password)
+
+            # user.groups.add(auth.models.Group.objects.get(name="KaeruUsers"))
+
+            '''To create new Group. '''
+            my_group, is_created = DjangoGroup.objects.get_or_create(name='KaeruUsers')
+            new_user.groups.add(my_group)
+            # mygroup.save()
+
+
+            '''future work: set group permissions'''
+            # my_group.permissions = [permission_list]
+
+
+            new_user.save()
+            cookie['signup_success'] = True
+            cookie['user'] = new_user
+
+            # log in
+            auth.login(request, auth.authenticate(username=raw_username, password=raw_password))
+            return render_to_response(url, cookie)
+
+        else:
+            # Existing user.
+            cookie['duplicate_username'] = True
+            return render_to_response(url, cookie)
+    else:
+        # Show the sign up page
+        return render_to_response(url, cookie)
