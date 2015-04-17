@@ -44,14 +44,12 @@ def tutorial_view(request):
 def index_view(request):
     return render_to_response('index.html', {})
 
-#todo: uncomment below when user functionality is working
-#@login_required
+@login_required
 def codes_view(request):
     cookie = _get_csrf_cookie(request)
     return render_to_response('codes.html', cookie)
 
-#todo: uncomment below when user functionality is working
-#@login_required
+@login_required
 def codes_submit_view(request):
 
     cookie = _get_csrf_cookie(request)
