@@ -7,17 +7,7 @@
     <h2>Owned Projects</h2>
 
     {% for project in projects %}
-    	<p>{{ project }}</p>
+    	<p> <a href="/projects/{{ username }}/{{ project }}/">{{ project }}</a> </p>
 	{% endfor %}
-
-    <h2>Add Project</h2>
-    
-        <form action="/projects/" method="post">
-        	{% csrf_token %}
-            <p>Project Name:
-                <input type="text" name="projectname" value="" placeholder="name" required>
-            </p>
-            <input type="submit" value="Submit" />
-        </form>
 
 {% endblock %}

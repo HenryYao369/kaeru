@@ -112,27 +112,49 @@ def index_view(request):
         return render_to_response(url, cookie)
 
 @login_required
-def projects_view(request):
-    
+def projects_view(request, urlusername=None, urlprojectname=None):
+
     # Get information
     cookie = _get_csrf_cookie(request)
     username = request.user.username # Username info
-    user = User.objects.get(username=username)
 
-    # Add a new project model
-    if request.method == "POST":
-        projectname = request.POST.get('projectname', None)
-        if user is not None and projectname is not None:
-            Project(
-                name=projectname, 
-                creator=user,
-                create_date=timezone.now()
-             ).save()
+    # Default: display own projects page
+    if (urlusername is None) or ((urlusername == username) and (urlprojectname is None)):
+        user = User.objects.get(username=username)
 
-    # Display all project information for this user
-    cookie['username'] = username
-    cookie['projects'] = Project.objects.all().filter(creator=user) # All created projects
-    return render_to_response('projects.html', cookie)
+        # Add a new project model
+        if request.method == "POST":
+            projectname = request.POST.get('projectname', None)
+            if user is not None and projectname is not None:
+                Project(
+                    name=projectname, 
+                    creator=user,
+                    create_date=timezone.now()
+                ).save()
+
+        # Display all project information for this user
+        cookie['username'] = username
+        cookie['projects'] = Project.objects.all().filter(creator=user) # All created projects
+        return render_to_response('myprojects.html', cookie)
+
+    # Specified user: display specified user's projects page
+    elif urlusername is not None and urlprojectname is None:
+
+        user = User.objects.get(username=urlusername)
+        cookie['username'] = urlusername
+        cookie['projects'] = Project.objects.all().filter(creator=user) # All created projects
+        return render_to_response('projects.html', cookie)
+
+    # Specified user and project: display specified project page
+    elif urlusername is not None and urlprojectname is not None:
+        project = Project.objects.all().filter(name=urlprojectname) # Specific project
+        cookie['username'] = urlusername
+        cookie['projectname'] = urlprojectname
+        return render_to_response('project.html', cookie)
+
+    # Other: do nothing
+    else:
+        return None
 
 def signup_view(request):
     cookie = _get_csrf_cookie(request)
