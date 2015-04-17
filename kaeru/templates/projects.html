@@ -10,4 +10,18 @@
     	<p> <a href="/projects/{{ username }}/{{ project }}/">{{ project }}</a> </p>
 	{% endfor %}
 
+	{% if isuser %}
+
+    <h2>Add Project</h2>
+    
+        <form action="/projects/" method="post">
+        	{% csrf_token %}
+            <p>Project Name:
+                <input type="text" name="projectname" value="" placeholder="name" required>
+            </p>
+            <input type="submit" value="Submit" />
+        </form>
+
+    {% endif %}
+
 {% endblock %}

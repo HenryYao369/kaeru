@@ -4,4 +4,11 @@
 
     <h2>{{ projectname }}</h2>
 
+    {% if iscreator %}
+    <form action="/projects/{{ username }}/" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Delete" />
+    </form>
+    {% endif %}
+
 {% endblock %}
