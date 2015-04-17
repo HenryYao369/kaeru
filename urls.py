@@ -17,4 +17,6 @@ urlpatterns = patterns('',
     url(r'^signup/$' , 'kaeru.views.signup_view'),
     url(r'^people/$' , 'kaeru.views.people_view'),
     url(r'^ide/$' , 'kaeru.views.ide_view')
+    url(r'^projects/$' , 'kaeru.views.projects_view'), 
+    url(r'^tutorial/$' , 'kaeru.views.tutorial_view'), 
 )
