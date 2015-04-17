@@ -9,7 +9,7 @@ VERSION=('%d.%d' % (VERSIONMAJOR, VERSIONMINOR))
 class Project(models.Model):
     name = models.CharField(max_length=200) # Name of the project
     creator = models.ForeignKey(User, default=None, related_name="project_creator") # Original creator
-    # contributors = models.ManyToManyField(User, related_name="project_contributors") # Contributors to the project
+    contributors = models.ManyToManyField(User, related_name="project_contributors") # Contributors to the project
     hidden = models.BooleanField(default=False) # Public/Private Visibility
     create_date = models.DateTimeField('date created') # Creation date
 

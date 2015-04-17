@@ -96,29 +96,52 @@ class ProjectTest(TestCase):
             password="a2e6fff81614f079077573df38ad10a1",
          ).save()
 
-    # Tests user creation of projects using the view
+    # Tests user creation and deletion of projects using the view
+    # 1-creation of project in default view
+    # 2-creation of project in user view
+    # 3-deletion of project
     def test_create_project_view(self):
 
+        # Initial account setup and signing
         response = self.client.post('/signup/', {'username': 'dummyName',
                                                 'password': 'dummyPass',
                                                 'email': 'dummy@email.com',
                                                 'first_name': 'Dummy',
                                                 'last_name': 'Name'})
         self.assertEqual(200, response.status_code)
-        user = User.objects.get(username="dummyName")
 
-        # Logging in as anon
+        user = User.objects.get(username='dummyName')
+
         response = self.client.post('/login/', {'username': 'dummyName',
                                                 'password': 'dummyPass'})
         self.assertEqual(200, response.status_code)
 
-        # Creating a project as anon
-        response = self.client.post('/projects/', {'projectname': "MyFirstProject"})
+        # Creating a project through default view
+        response = self.client.post('/projects/', {'operation': 'add',
+                                                   'projectname': 'MyFirstProject'})
         self.assertEqual(200, response.status_code)
 
         # Check if project has been added to database
         project = Project.objects.all().filter(creator=user)[0]
-        self.assertEqual("MyFirstProject",project.name);
+        self.assertEqual("MyFirstProject",project.name)
+
+        # Creating a project through general account view
+        response = self.client.post('/projects/dummyName/', {'operation': 'add',
+                                                             'projectname': 'MySecondProject'})
+        self.assertEqual(200, response.status_code)
+
+        # Check if project has been added to database
+        project = Project.objects.all().filter(creator=user)[1]
+        self.assertEqual("MySecondProject",project.name)
+
+        # Deleting a project
+        response = self.client.post('/projects/dummyName/', {'operation': 'delete',
+                                                            'projectname': 'MyFirstProject'})
+        self.assertEqual(200, response.status_code)
+
+        # Check if project has been deleted from database
+        project = Project.objects.all().filter(creator=user)[0]
+        self.assertEqual("MySecondProject",project.name);
 
     # Test user creation of projects
     def test_create_project(self):
