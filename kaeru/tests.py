@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from kaeru.models import Project
 from kaeru.models import Code
+from kaeru.models import Page
 
 class LoginTest(TestCase):
 
@@ -60,30 +61,27 @@ class UrlsTest(TestCase):
         response = self.client.get('/')
         self.assertEqual(200, response.status_code)
 
-    def test_about_exists(self):
+    def test_documentation_exists(self):
         """
-        Check that each about page exists
+        Check that documentation page exists
         """
-        from kaeru.views import ABOUT_PAGES
-        for pagename in ABOUT_PAGES:
-            response = self.client.get('/about/%s/' % pagename)
-            self.assertEqual(200, response.status_code)
-
-    def test_about_404(self):
-        """
-        Raise an arbitrary 404 in the views.about function
-        """
-        from kaeru.views import ABOUT_PAGES
-        pagename = "".join(ABOUT_PAGES)
-        response = self.client.get('/about/%s/' % pagename)
-        self.assertEqual(404, response.status_code)
-
-    def test_about_default(self):
-        """
-        Check that default about page exists
-        """
-        response = self.client.get('/about/')
+        response = self.client.get('/documentation/')
         self.assertEqual(200, response.status_code)
+
+    def test_people_exists(self):
+        """
+        Check that people page exists
+        """
+        response = self.client.get('/people/')
+        self.assertEqual(200,response.status_code)
+
+    def test_404(self):
+        """
+        Raise an arbitrary 404
+        """
+        pagename = "arbitraryname"
+        response = self.client.get('/%s/' % pagename)
+        self.assertEqual(404, response.status_code)
 
 # Testing adding projects as a user
 class ProjectTest(TestCase):
@@ -97,6 +95,30 @@ class ProjectTest(TestCase):
             email="anon@anon.anon",
             password="a2e6fff81614f079077573df38ad10a1",
          ).save()
+
+    # Tests user creation of projects using the view
+    def test_create_project_view(self):
+
+        response = self.client.post('/signup/', {'username': 'dummyName',
+                                                'password': 'dummyPass',
+                                                'email': 'dummy@email.com',
+                                                'first_name': 'Dummy',
+                                                'last_name': 'Name'})
+        self.assertEqual(200, response.status_code)
+        user = User.objects.get(username="dummyName")
+
+        # Logging in as anon
+        response = self.client.post('/login/', {'username': 'dummyName',
+                                                'password': 'dummyPass'})
+        self.assertEqual(200, response.status_code)
+
+        # Creating a project as anon
+        response = self.client.post('/projects/', {'projectname': "MyFirstProject"})
+        self.assertEqual(200, response.status_code)
+
+        # Check if project has been added to database
+        project = Project.objects.all().filter(creator=user)[0]
+        self.assertEqual("MyFirstProject",project.name);
 
     # Test user creation of projects
     def test_create_project(self):
@@ -170,3 +192,62 @@ class ProjectTest(TestCase):
         p2.codes.add(n2)
         p2.save()
         self.assertEqual(n2.projects.all()[0].name,"MyFirstProject");
+
+    def test_projectcode_to_page(self):
+        p = Project(
+            name="MyFirstProject",
+            creator=User.objects.get(username="anon"),
+            create_date=timezone.now()
+        )
+        p.save()
+        c = Code(
+            filePathAndName="filename",
+            created=timezone.now()
+
+        )
+        c.save()
+        page = Page(
+            page_name="pagename",
+            page_create_date=timezone.now(),
+            page_modify_date=timezone.now(),
+        )
+        page.save()
+        page.project=p
+        page.code_set.add(c)
+        page.save()
+        self.assertEqual(page.project.name,"MyFirstProject")
+        self.assertEqual(page.code_set.all()[0].filePathAndName,"filename")
+
+    def test_page_to_project(self):
+        p = Project(
+            name="MyFirstProject",
+            creator=User.objects.get(username="anon"),
+            create_date=timezone.now()
+        )
+        p.save()
+        page = Page(
+            page_name="pagename",
+            page_create_date=timezone.now(),
+            page_modify_date=timezone.now(),
+        )
+        page.save()
+        p.page_set.add(page)
+        p.save()
+        self.assertEqual(p.page_set.all()[0].page_name,"pagename")
+
+    def test_page_to_code(self):
+        c = Code(
+            filePathAndName="filename",
+            created=timezone.now()
+
+        )
+        c.save()
+        page = Page(
+            page_name="pagename",
+            page_create_date=timezone.now(),
+            page_modify_date=timezone.now(),
+        )
+        page.save()
+        c.page=page
+        c.save()
+        self.assertEqual(c.page.page_name,"pagename")

@@ -1,46 +1,96 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-<html lang="en">
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+<html class="no-js" lang="en">
 
-    <head>
-        <title>{% block title %}Kaeru means change{% endblock %}</title>
-        <link rel="stylesheet" type="text/css" href="{% static 'kaeru/style.css' %}" />
-        <link rel="shortcut icon" type="image/x-icon" href="{% static 'kaeru/icons/cornell.ico' %}" />
-    </head>
+<head>
+  <meta charset="utf-8" />
+  <!-- If you delete this meta tag World War Z will become a reality -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Kaeru means change{% endblock %}</title>
 
-    <body>
-        <div id="nav">
-            <span><a href="/">Home</a></span>
-            <span><a href="/about/">About</a></span>
-            <span><a href="/about/faq/">FAQ</a></span>
-            <span><a href="/about/people/">People</a></span>
-            <span><a href="/about/support/">Support</a></span>
-            <span><a href="/documentation/">Documentation</a></span>
-            <span><a href="/download/">Download</a></span>
-            <span><a href="/news/">News</a></span>
-            <span><a href="/publications/">Publications</a></span>
-            <span><a href="/secret/">Members Only</a></span>
-            <span><a href="/tutorial/">Tutorial</a></span>
-			<span><a href="/codes/">Codes</a></span>
-        </div>
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'kaeru/icons/cornell.ico' %}" />
 
-        <div id="login">
-            <span><a href="/login/">Sign In</a></span>
-            <span><a href="/logout/">Log out</a></span>
-        </div>
+  <!-- If you are using the CSS version, only link these 2 files, you may add app.css to use for your overrides if you like -->
+  <link rel="stylesheet" href="{% static 'kaeru/css/foundation.css' %}" />
+  <link rel="stylesheet" href="{% static 'kaeru/css/normalize.css' %}">
 
-        <div id="header">
-          {% block header %}{% endblock %}
-        </div>
+  <link rel="stylesheet" type="text/css" href="{% static 'kaeru/css/app.css' %}" />
 
-        <div id="content">
-          {% block content %}{% endblock %}
-        </div>
+  <script src="{% static 'kaeru/js/vendor/modernizr.js' %}"></script>
+</head>
 
-        <div id="footer">
-          {% block footer %}{% endblock %}
-        </div>
+<body>
 
-    </body>
+  <!--Naviation Bar-->
+  <div class="fixed">
+    <nav class="top-bar" data-topbar role="navigation">
+      <ul class="title-area">
+        <li class="name">
+          <h1><a href="/">Kaeru</a></h1>
+        </li>
+        <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+        <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+      </ul>
+
+      <section class="top-bar-section">
+        <!-- Right Nav Section -->
+        <ul class="right">
+          <li><a href="/documentation/">Documentation</a></li>
+          <li class="has-dropdown">
+            <a href="/login/">Login</a>
+            <ul class="dropdown">
+              <li><a href="/login/">Login</a></li>
+              <li><a href="/">Sign Up</a></li>
+              <li><a href="/logout/">Log Out</a></li>
+            </ul>
+          </li>
+        </ul>
+
+        <!-- Left Nav Section -->
+        <ul class="left">
+        </ul>
+      </section>
+    </nav>
+  </div>
+
+  <!--body content here -->
+  <div id="content">
+    {% block content %}
+      {% block header %}
+      {% endblock %}
+    {% endblock %}
+  </div>
+
+  <!-- Footer -->
+  <div id="footer">
+    {% block footer %}
+    <div class="row">
+      <div class="small-3 columns"></div>
+      <div class="small-6 columns text-center">
+        <a href="/people/">People</a>
+      </div>
+      <div class="small-3 columns">
+        We don't have a Copyright yet. &copy; <a href="http://www.cs.cornell.edu/">Cornell University</a>
+      </div>
+    </div>
+    {% endblock %}
+  </div>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+
+  <script src="{% static 'kaeru/js/slides.js' %}"></script>
+  <!-- Thank you Charles Smith -->
+  <script src="{% static 'kaeru/js/sticky-footer.js' %}"></script>
+
+  <!-- Foundation -->
+  <script src="{% static 'kaeru/js/vendor/jquery.js' %}"></script>
+  <script src="{% static 'kaeru/js/foundation.min.js' %}"></script>
+  <script>
+  $(document).foundation();
+  </script>
+
+</body>
 
 </html>
