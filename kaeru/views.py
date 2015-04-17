@@ -6,6 +6,9 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.core.context_processors import csrf
 
+from django.utils import timezone
+from kaeru.models import Code
+
 import os
 
 # These pages should live in 'kaeru/templates/about/'
@@ -29,7 +32,7 @@ def documentation_view(request):
 def download_view(request):
     return render_to_response('download.html', {})
 
-def news_view(request):
+def news_view(request): 
     return render_to_response('news.html', {})
 
 def publications_view(request):
@@ -40,6 +43,40 @@ def tutorial_view(request):
 
 def index_view(request):
     return render_to_response('index.html', {})
+
+#todo: uncomment below when user functionality is working
+#@login_required
+def codes_view(request):
+    cookie = _get_csrf_cookie(request)
+    return render_to_response('codes.html', cookie)
+
+#todo: uncomment below when user functionality is working
+#@login_required
+def codes_submit_view(request):
+
+    cookie = _get_csrf_cookie(request)
+
+    #
+    filename = request.POST.get('filename', '')
+    code = request.POST.get('code', '')
+    
+    #get username
+    username = 'cem'
+    
+    filename = username + '-' + filename
+    
+    #assumes user gives a normal filename
+    file = open(filename, 'w')
+    file.write(code)
+    file.close()
+
+    Code(
+        filePathAndName = filename,
+        created = timezone.now()
+    ).save()
+
+    html = "<html>...Successfully created "+filename+"...</html>"
+    return HttpResponse(html)
 
 def _get_csrf_cookie(request):
     # Authenticate cookies for django csrf (cross-site reference) forms
@@ -78,7 +115,7 @@ def logout_view(request):
     else:
         # Logout is a no-op. Nobody was logged in.
         return render_to_response('logout.html', {})
-
+        
 @login_required
 def secret_view(request):
     return render_to_response('secret.html', {})

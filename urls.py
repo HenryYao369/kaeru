@@ -20,4 +20,6 @@ urlpatterns = patterns('',
     url(r'^secret/$' , 'kaeru.views.secret_view'), 
     url(r'^signup/$' , 'kaeru.views.signup_view'),
     url(r'^tutorial/$' , 'kaeru.views.tutorial_view'), 
+	url(r'^codes/$' , 'kaeru.views.codes_view'), 
+	url(r'^codes_submit/$' , 'kaeru.views.codes_submit_view'), 
 )
