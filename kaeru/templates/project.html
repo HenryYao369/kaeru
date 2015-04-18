@@ -5,6 +5,35 @@
     <h2>{{ projectname }}</h2>
 
     {% if iscreator %}
+
+    <!-- Listing contributors -->
+    <h4>Contributors</h4>
+
+    {% for contributor in contributors %}
+        <p><a href="/projects/{{ contributor }}/">{{ contributor }}</a></p> 
+        <form action="/projects/{{ username }}/{{ projectname }}/" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="operation" value="rmcontributor"> <!-- TODO: Change this at some point -->
+            <input type="hidden" name="contributorname" value="{{ contributor }}"> <!-- TODO: Change this at some point -->
+            <input type="submit" value="Delete" />
+        </form>
+    {% endfor %}
+
+    <!-- Adding contributors -->
+    <h4>Add Contributor</h4>
+    
+    <form action="/projects/{{ username }}/{{ projectname }}/" method="post">
+        {% csrf_token %}
+        <p>Contributor Name:
+            <input type="text" name="contributorname" value="" placeholder="name" required>
+        </p>
+        <input type="hidden" name="operation" value="addcontributor"> <!-- TODO: Change this at some point -->
+        <input type="submit" value="Submit" />
+    </form>
+    <br>
+
+    <!-- Deleting the project -->
+    <h4>Delete Project</h4>
     <form action="/projects/{{ username }}/" method="post">
         {% csrf_token %}
         <input type="hidden" name="operation" value="delete"> <!-- TODO: Change this at some point -->

@@ -10,6 +10,7 @@ from django.core.context_processors import csrf
 from django.contrib.auth.models import User
 from kaeru.models import Project
 from django.utils import timezone
+from django.db.models import Q
 
 import os
 
@@ -117,43 +118,71 @@ def projects_view(request, urlusername=None, urlprojectname=None):
     # Get information
     cookie = _get_csrf_cookie(request)
     username = request.user.username # Username info
+    isuser = (urlusername is None) or (username == urlusername) # Whether or not user is responsible for this view
 
     # Specified user: display specified user's projects page
     if (urlusername is None) or (urlusername is not None and urlprojectname is None):
 
-        if (urlusername is None):
+        if isuser:
             user = User.objects.get(username=username)
         else:
             user = User.objects.get(username=urlusername)
 
-        # Add a new project model
+        # Handle POST requests
         if request.method == "POST":
             operation = request.POST.get('operation', None)
             projectname = request.POST.get('projectname', None)
-            if user is not None and projectname is not None:
+            hidden = request.POST.get('hidden', False)
+            if user is not None and projectname is not None and isuser:
                 if operation == 'delete': # Delete the given project
                     Project.objects.all().filter(creator=user).filter(name=projectname).delete()
                 elif operation == 'add': # Add a new project
-                    Project(
+                    p = Project(
                         name=projectname, 
                         creator=user,
+                        hidden=hidden,
                         create_date=timezone.now()
-                     ).save()
+                     )
+                    p.save()
+                    p.contributors.add(user)
+                    p.save()
 
-        if (urlusername is None):
+        # Display project listings
+        if isuser: # Own projects
             cookie['username'] = username
-        else:
+            cookie['projects'] = Project.objects.all().filter(creator=user) # All created projects
+        else: # Others' projects
             cookie['username'] = urlusername
-        cookie['projects'] = Project.objects.all().filter(creator=user) # All created projects
-        cookie['isuser'] = (username == urlusername) or (urlusername is None)
+            publiccriterion = Q(creator=user, hidden=False) # Want to show public projects
+            contributorcriterion = Q(creator=user, hidden=True, contributors__username=username) # Also want to show contributed projects
+            cookie['projects'] = Project.objects.all().filter(publiccriterion | contributorcriterion)
+        cookie['isuser'] = isuser
         return render_to_response('projects.html', cookie)
 
     # Specified user and project: display specified project page
     elif urlusername is not None and urlprojectname is not None:
+        # Handle POST requests
+        if request.method == "POST":
+            operation = request.POST.get('operation', None)
+            contributorname = request.POST.get('contributorname', None)
+            if isuser:
+                if operation == 'addcontributor': # Add a contributor to a project
+                    project = Project.objects.all().filter(name=urlprojectname)[0] # Specific project
+                    contributor = User.objects.get(username=contributorname)
+                    project.contributors.add(contributor)
+                    project.save()
+                elif operation == 'rmcontributor': # Remove a contributor from a project
+                    project = Project.objects.all().filter(name=urlprojectname)[0] # Specific project
+                    contributor = User.objects.get(username=contributorname)
+                    project.contributors.remove(contributor)
+                    project.save()
+
+        # Display project information
         project = Project.objects.all().filter(name=urlprojectname) # Specific project
         cookie['username'] = urlusername
         cookie['projectname'] = urlprojectname
         cookie['iscreator'] = (urlusername == username) # Dictate delete permissions
+        cookie['contributors'] = project[0].contributors.all() # TODO: Change so that we don't use zero-index
         return render_to_response('project.html', cookie)
 
     # Other: do nothing
