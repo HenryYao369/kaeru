@@ -18,4 +18,6 @@ urlpatterns = patterns('',
     url(r'^people/$' , 'kaeru.views.people_view'),
     url(r'^projects/$' , 'kaeru.views.projects_view'), 
     url(r'^tutorial/$' , 'kaeru.views.tutorial_view'), 
+	url(r'^codes/$' , 'kaeru.views.codes_view'), 
+	url(r'^codes_submit/$' , 'kaeru.views.codes_submit_view'), 
 )

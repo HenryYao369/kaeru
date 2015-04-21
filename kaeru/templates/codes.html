@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+	
+	<!-- for testing purposes we didn't fill this part-->
+    {% else %}
+		<h1>Codes window</h1>
+        <form action="/codes_submit/" method="post">
+        {% csrf_token %}
+            <p>Scratchpad</p>
+                <p>
+    <textarea name="code" cols="80" rows="30" placeholder="Start typing!" required></textarea>
+<!--	<input type="text" name="code" value="" placeholder="Start typing!" required> -->
+            </p>
+            <p>File Name:
+                <input type="text" name="filename" value="" placeholder="File name" required>
+            </p>
+            <input type="submit" value="Save!" required/>
+        </form>
+
+    
+    <h1>Log in to Kaeru</h1>
+        <p>
+			Please log in to Kaeru
+        </p>
+        <p>
+            Don't have an account? <a href="/signup/">Create one</a>.
+        </p>
+    {% endif %}
+{% endblock %}

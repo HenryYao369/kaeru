@@ -11,6 +11,9 @@ from django.contrib.auth.models import User
 from kaeru.models import Project
 from django.utils import timezone
 
+from django.utils import timezone
+from kaeru.models import Code
+
 import os
 
 # These pages should live in 'kaeru/templates/about/'
@@ -36,6 +39,38 @@ def documentation_view(request):
 
 def people_view(request):
     return render_to_response('people.html', {})
+
+@login_required
+def codes_view(request):
+    cookie = _get_csrf_cookie(request)
+    return render_to_response('codes.html', cookie)
+
+@login_required
+def codes_submit_view(request):
+
+    cookie = _get_csrf_cookie(request)
+
+    #
+    filename = request.POST.get('filename', '')
+    code = request.POST.get('code', '')
+    
+    #get username
+    username = 'cem'
+    
+    filename = username + '-' + filename
+    
+    #assumes user gives a normal filename
+    file = open(filename, 'w')
+    file.write(code)
+    file.close()
+
+    Code(
+        filePathAndName = filename,
+        created = timezone.now()
+    ).save()
+
+    html = "<html>...Successfully created "+filename+"...</html>"
+    return HttpResponse(html)
 
 def _get_csrf_cookie(request):
     # Authenticate cookies for django csrf (cross-site reference) forms
