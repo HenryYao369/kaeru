@@ -4,20 +4,29 @@
     
     <p>This is {{ username }}'s projects page.</p>
 
+    <!-- Listing projects -->
     <h2>Owned Projects</h2>
 
     {% for project in projects %}
-    	<p>{{ project }}</p>
-	{% endfor %}
+        <p> <a href="/projects/{{ username }}/{{ project }}/">{{ project }}</a> </p>
+    {% endfor %}
 
+    {% if isuser %}
+
+    <!-- Adding projects -->
     <h2>Add Project</h2>
     
         <form action="/projects/" method="post">
-        	{% csrf_token %}
+            {% csrf_token %}
             <p>Project Name:
                 <input type="text" name="projectname" value="" placeholder="name" required>
             </p>
+            <input type="checkbox" name="hidden" id="hidden" value="True">
+            <label for="hidden">Private Project (only you and contributors can see)</label><br>
+            <input type="hidden" name="operation" value="add"> <!-- TODO: Change this at some point -->
             <input type="submit" value="Submit" />
         </form>
+
+    {% endif %}
 
 {% endblock %}
