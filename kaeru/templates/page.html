@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h2>{{ projectname }} / {{ pagename }}</h2>
+
+    <!-- Listing code -->
+    <form action="/projects/{{ username }}/{{ projectname }}/{{ pagename }}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="operation" value="change_code"> <!-- TODO: Change this at some point -->
+        <input type="submit" value="Commit" />
+    </form>
+
+{% endblock %}

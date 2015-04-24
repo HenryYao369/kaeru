@@ -255,13 +255,27 @@ def projects_view(request, url_username=None, url_projectname=None, url_pagename
         cookie['username'] = url_username
         cookie['projectname'] = url_projectname
         cookie['iscreator'] = (url_username == username) # Dictate delete permissions
-        cookie['contributors'] = project.contributors.all() # TODO: Change so that we don't use zero-index
-        cookie['pages'] = Page.objects.all().filter(project=project) # TODO: Change so that we don't use zero-index
+        cookie['contributors'] = project.contributors.all()
+        cookie['pages'] = Page.objects.all().filter(project=project)
         return render_to_response('project.html', cookie)
 
     # Specified user, project, and page: display specified page
     else:
-        return None
+        creator = User.objects.get(username=url_username)
+        # Handle POST requests
+        if request.method == "POST":
+            if is_user:
+                kaeru.utils.handle_page_post(
+                    request.POST.get('operation', None), 
+                    creator=creator, 
+                    project_name=url_projectname)
+
+        # Display project information
+        project = Project.objects.all().filter(creator=creator,name=url_projectname)[0] # Specific project
+        cookie['username'] = url_username
+        cookie['projectname'] = url_projectname
+        cookie['pagename'] = Page.objects.all().filter(project=project, page_name=url_pagename)[0]
+        return render_to_response('page.html', cookie)
 
 # The pages view is for public viewing of served pages
 def pages_view(request, url_username=None, url_projectname=None, url_pagename=None):
