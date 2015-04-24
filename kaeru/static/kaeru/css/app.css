@@ -3,10 +3,6 @@
 /* Makes the elements fill up the whole screen (by defulat, Foundation is max 1000px wide) */
 .row {min-width:100% !important;}
 
-div{
-
-}
-
 #kaeru-info {
     background: url("../img/blaster-master-frog.png") no-repeat left; 
 }
