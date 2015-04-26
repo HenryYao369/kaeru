@@ -17,5 +17,5 @@ urlpatterns = patterns('',
     url(r'^signup/$' , 'kaeru.views.signup_view'),
     url(r'^people/$' , 'kaeru.views.people_view'),
     url(r'^projects/$' , 'kaeru.views.projects_view'), 
-    url(r'^tutorial/$' , 'kaeru.views.tutorial_view'), 
+    # url(r'^tutorial/$' , 'kaeru.views.tutorial_view'),  # comment out this line to go to admin site.
 )
