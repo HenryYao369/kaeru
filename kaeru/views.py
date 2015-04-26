@@ -268,14 +268,19 @@ def projects_view(request, url_username=None, url_projectname=None, url_pagename
                 kaeru.utils.handle_page_post(
                     request.POST.get('operation', None), 
                     creator=creator, 
-                    project_name=url_projectname)
+                    project_name=url_projectname,
+                    page_name=url_pagename,
+                    code=request.POST.get('code', None))
 
         # Display project information
         project = Project.objects.all().filter(creator=creator,name=url_projectname)[0] # Specific project
+        page = Page.objects.all().filter(project=project,page_name=url_pagename)[0] # Specific page
+        code = Code.objects.all().filter(page=page)[0] # Specific code
         cookie['username'] = url_username
         cookie['projectname'] = url_projectname
-        cookie['pagename'] = Page.objects.all().filter(project=project, page_name=url_pagename)[0]
-        return render_to_response('page.html', cookie)
+        cookie['pagename'] = page.page_name
+        cookie['code'] = code.code
+        return render_to_response('pages.html', cookie)
 
 # The pages view is for public viewing of served pages
 def pages_view(request, url_username=None, url_projectname=None, url_pagename=None):
@@ -283,9 +288,16 @@ def pages_view(request, url_username=None, url_projectname=None, url_pagename=No
     if url_username is None or url_projectname is None or url_pagename is None:
         return None
     
-    # TODO: Obtain the relevant page
-    # TODO: Obtain the relevant JScript code associated with the page
-    # TODO: Load the HTML template with the relevant JScript code
-    return None
+    # Obtain the relevant JScript code associated with the page
+    creator = User.objects.get(username=url_username)
+    project = Project.objects.all().filter(creator=creator,name=url_projectname)[0] # Specific project
+    page = Page.objects.all().filter(project=project,page_name=url_pagename)[0] # Specific page
+    code = Code.objects.all().filter(page=page)[0] # Specific code
+    
+    # Load the HTML template with the relevant JScript code
+    cookie = {
+        'code': code.code
+        }
+    return render_to_response('page.html', cookie)
 
     

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h2>{{ projectname }} / {{ pagename }}</h2>
+
+    <!-- Listing code -->
+    <form action="/projects/{{ username }}/{{ projectname }}/{{ pagename }}/" method="post" id="codeform">
+        {% csrf_token %}
+        <textarea name="code" form="codeform" rows="10">{{ code }}</textarea>
+        <input type="hidden" name="operation" value="modify_code">
+        <input type="submit" value="Commit" />
+    </form>
+
+{% endblock %}

@@ -18,7 +18,6 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
-
 class Page(models.Model):
     page_name = models.CharField(max_length=200)   #Page name
     # page_create_date = models.DateTimeField('Date created') #creation date
@@ -31,15 +30,16 @@ class Page(models.Model):
         return self.page_name
 
 class Code(models.Model):
-	filePathAndName = models.CharField(max_length=124) # Name of the project
-	created = models.DateTimeField('creation date') # Date when the project is created
-	#code-project:	many-many
-	projects = models.ManyToManyField(Project, related_name="codes")
-	#TODO:	code-pages:		many-many
-	page = models.ForeignKey(Page);
+    # filePathAndName = models.CharField(max_length=124) # Name of the project
+    # created = models.DateTimeField('creation date') # Date when the project is created
+    #code-project:  many-many
+    # projects = models.ManyToManyField(Project, related_name="codes")
+    #TODO:  code-pages:     many-many
+    page = models.ForeignKey(Page);
+    code = models.TextField(default='');
 
-	def __str__(self):
-		return self.name
+    def __str__(self):
+        return self.name
 
 
 

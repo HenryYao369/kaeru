@@ -23,8 +23,12 @@ def handle_user_post(operation, **kwargs):
         project.save()
         project.contributors.add(kwargs['user'])
         project.save()
-    elif operation == 'rm': # Delete the given project
-        Project.objects.all().filter(creator=kwargs['user']).filter(name=kwargs['project_name']).delete()
+    elif operation == 'rm': # Delete the given project and all associated pieces
+        project = Project.objects.all().filter(creator=kwargs['user'], name=kwargs['project_name']) # Specific project
+        page = Page.objects.all().filter(project=project)
+        Code.objects.all().filter(page=page).delete()
+        page.delete()
+        project.delete()
 
 # Handles a post request made from a single project management view
 # Operations:
@@ -48,17 +52,35 @@ def handle_project_post(operation, **kwargs):
         contributor = User.objects.get(username=kwargs['contributor_name'])
         project.contributors.remove(contributor)
         project.save()
-    elif operation == 'add_page': # Add a page to a project
+    elif operation == 'add_page': # Add a page and default code to a project
         project = Project.objects.all().filter(creator=kwargs['creator'], name=kwargs['project_name'])[0] # Specific project
         page = Page(
             page_name=kwargs['page_name'],
             project=project
          )
         page.save()
-    elif operation == 'rm_page': # Remove a page from a project
+        code = Code(
+            page=page
+         )
+        code.save()
+    elif operation == 'rm_page': # Remove a page from a project and all associated pieces
         project = Project.objects.all().filter(creator=kwargs['creator'], name=kwargs['project_name'])[0] # Specific project
-        Page.objects.all().filter(page_name=kwargs['page_name'],project=project).delete()
+        page = Page.objects.all().filter(page_name=kwargs['page_name'],project=project)
+        Code.objects.all().filter(page=page).delete()
+        page.delete()
 
 # Handles a post request made from a page management view
+# Operations:
+#   modify_code - modifies the code backing this page
+# Additional arguments:
+#   creator - user object representing the creator of the project
+#   project_name - name of the project
+#   page_name - name of the page
+#   code - code for the page
 def handle_page_post(operation, **kwargs):
-    return None
+    if operation == 'modify_code': # Add a contributor to a project
+        project = Project.objects.all().filter(creator=kwargs['creator'], name=kwargs['project_name'])[0]
+        page = Page.objects.all().filter(page_name=kwargs['page_name'],project=project)[0]
+        code = Code.objects.all().filter(page=page)[0]
+        code.code = kwargs['code']
+        code.save()
