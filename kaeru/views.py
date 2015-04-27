@@ -15,6 +15,13 @@ from django.db.models import Q
 from django.utils import timezone
 from kaeru.models import Code
 
+from django.http import HttpResponseRedirect, HttpResponse
+from django.core.urlresolvers import reverse
+from django import forms
+from kaeru.forms import changepasswordForm
+from django.template import RequestContext
+
+
 import os
 
 # These pages should live in 'kaeru/templates/about/'
@@ -269,3 +276,50 @@ def signup_view(request):
     else:
         # Show the sign up page
         return render_to_response(url, cookie)
+
+# change password
+def change_password(request):
+
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse("loginerror"))  # there is an error here!
+
+    template = {}
+    form = changepasswordForm()
+
+    if request.method=="POST":
+        form = changepasswordForm(request.POST.copy())
+
+        if form.is_valid():
+            username = request.user.username
+            oldpassword = form.cleaned_data["oldpassword"]
+            newpassword = form.cleaned_data["newpassword"]
+            newpassword1 = form.cleaned_data["newpassword1"]
+            user = auth.authenticate(username=username,password=oldpassword)
+            if user: # origin pwd correct
+                if newpassword == newpassword1:
+                    user.set_password(newpassword)
+                    user.save()
+                    print '1'
+                    return HttpResponseRedirect(reverse("kaeru.views.change_password_ok"))
+                else:
+                    template["word"] = 'new pwd not equal'
+                    template["form"] = form
+                    print '2'
+                    return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
+            else:  # origin pwd wrong
+                if newpassword == newpassword1:
+                    template["word"] = 'origin pwd wrong'
+                    template["form"] = form
+                    print '3'
+                    return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
+                else:
+                    template["word"] = 'origin pwd wrong, new pwd not equal'
+                    template["form"] = form
+                    print '4'
+                    return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
+    template["form"] = form
+    return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
+
+
+def change_password_ok(request):
+    return HttpResponse("Successfully change password!")
