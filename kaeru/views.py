@@ -361,5 +361,5 @@ def change_password_ok(request):
     return render_to_response("changepasswordOK.html")
 
 def change_user_data_ok(request):
-
     return render_to_response("changeUserDataOK.html")
+

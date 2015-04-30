@@ -44,6 +44,14 @@ class LoginTest(TestCase):
                                                 'password': user.password})
         self.assertEqual(200, response.status_code)
 
+
+# class UserDataTest(TestCase):
+#     def test_
+
+
+
+
+
 # AboutTest ?
 class UrlsTest(TestCase):
 
@@ -74,6 +82,20 @@ class UrlsTest(TestCase):
         """
         response = self.client.get('/people/')
         self.assertEqual(200,response.status_code)
+
+    def test_projects_exists(self):
+        """
+        Check that projects page exists
+        """
+        response = self.client.get('/projects/')
+        self.assertEqual(302,response.status_code) # 302? 200?
+
+    def test_change_password_exists(self):
+        """
+        Check that change_password page exists
+        """
+        response = self.client.get('/change_password/')  # 302? 200?
+        self.assertEqual(302,response.status_code)
 
     def test_404(self):
         """
