@@ -5,6 +5,13 @@ VERSIONMAJOR=1
 VERSIONMINOR=0
 VERSION=('%d.%d' % (VERSIONMAJOR, VERSIONMINOR))
 
+'''
+    we use Django built-in User Model. So we did not create a new user model here.
+    However, if you want to have more complex user data, you need to define a new user model.
+'''
+
+
+
 # Backing model for a user-created project
 class Project(models.Model):
     name = models.CharField(max_length=200) # Name of the project

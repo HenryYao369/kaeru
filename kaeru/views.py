@@ -1,11 +1,13 @@
+
 from django.contrib.auth.models import Group as DjangoGroup
 from django.contrib.auth.models import User as DjangoUser
+
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response,render
 from django.core.context_processors import csrf
 from django.contrib.auth.models import User
 from kaeru.models import Project
@@ -18,7 +20,7 @@ from kaeru.models import Code
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django import forms
-from kaeru.forms import changepasswordForm
+from kaeru.forms import changepasswordForm,change_user_data_Form
 from django.template import RequestContext
 
 
@@ -277,7 +279,41 @@ def signup_view(request):
         # Show the sign up page
         return render_to_response(url, cookie)
 
+
+@login_required()
+def change_user_data(request):
+
+    cookie = _get_csrf_cookie(request)
+
+    template = {}
+    form = change_user_data_Form()
+    if request.method=="POST":
+        form = change_user_data_Form(request.POST.copy())
+
+        if form.is_valid():
+            owner = request.user
+            username = owner.username
+            new_first_name = form.cleaned_data["new_first_name"]
+            new_last_name = form.cleaned_data["new_last_name"]
+            new_email = form.cleaned_data["new_email"]
+
+
+            owner.first_name = new_first_name
+            owner.last_name = new_last_name
+            owner.email = new_email
+
+            owner.save()
+            cookie['user'] = owner
+
+            return HttpResponseRedirect(reverse("kaeru.views.change_user_data_ok"))
+        # note: after editing one's data, (s)he is logged out. One must log in to see the changes again!
+
+    template["form"] = form
+    return render(request,"changeUserData.html",template,)
+
+
 # change password
+@login_required
 def change_password(request):
 
     if not request.user.is_authenticated():
@@ -322,4 +358,8 @@ def change_password(request):
 
 
 def change_password_ok(request):
-    return HttpResponse("Successfully change password!")
+    return render_to_response("changepasswordOK.html")
+
+def change_user_data_ok(request):
+
+    return render_to_response("changeUserDataOK.html")

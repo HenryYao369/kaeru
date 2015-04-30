@@ -28,4 +28,8 @@ urlpatterns = patterns('',
     url(r'^change_password/$', 'kaeru.views.change_password'),
     url(r'^change_password_ok/$', 'kaeru.views.change_password_ok'),
 
+    url(r'^change_user_data/$', 'kaeru.views.change_user_data'),
+    url(r'^change_user_data_ok/$', 'kaeru.views.change_user_data_ok')
+
+
 )
