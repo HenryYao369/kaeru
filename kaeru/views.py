@@ -251,7 +251,11 @@ def projects_view(request, url_username=None, url_projectname=None, url_pagename
                     page_name=request.POST.get('pagename', None))
 
         # Display project information
-        project = Project.objects.all().filter(creator=creator,name=url_projectname)[0] # Specific project
+        projects = Project.objects.all().filter(creator=creator,name=url_projectname)
+        if len(projects) is 0:
+            return render_to_response('404.html')
+        project = projects[0] # Specific project
+        
         cookie['username'] = url_username
         cookie['projectname'] = url_projectname
         cookie['iscreator'] = (url_username == username) # Dictate delete permissions
@@ -273,9 +277,18 @@ def projects_view(request, url_username=None, url_projectname=None, url_pagename
                     code=request.POST.get('code', None))
 
         # Display project information
-        project = Project.objects.all().filter(creator=creator,name=url_projectname)[0] # Specific project
-        page = Page.objects.all().filter(project=project,page_name=url_pagename)[0] # Specific page
+        projects = Project.objects.all().filter(creator=creator,name=url_projectname)
+        if len(projects) is 0:
+            return render_to_response('404.html')
+        project = projects[0] # Specific project
+
+        pages = Page.objects.all().filter(project=project,page_name=url_pagename)
+        if len(pages) is 0:
+            return render_to_response('404.html')
+        page = pages[0] # Specific page
+
         code = Code.objects.all().filter(page=page)[0] # Specific code
+
         cookie['username'] = url_username
         cookie['projectname'] = url_projectname
         cookie['pagename'] = page.page_name
@@ -286,12 +299,21 @@ def projects_view(request, url_username=None, url_projectname=None, url_pagename
 def pages_view(request, url_username=None, url_projectname=None, url_pagename=None):
 
     if url_username is None or url_projectname is None or url_pagename is None:
-        return None
+        return render_to_response('404.html')
     
     # Obtain the relevant JScript code associated with the page
     creator = User.objects.get(username=url_username)
-    project = Project.objects.all().filter(creator=creator,name=url_projectname)[0] # Specific project
-    page = Page.objects.all().filter(project=project,page_name=url_pagename)[0] # Specific page
+
+    projects = Project.objects.all().filter(creator=creator,name=url_projectname)
+    if len(projects) is 0:
+        return render_to_response('404.html')
+    project = projects[0] # Specific project
+
+    pages = Page.objects.all().filter(project=project,page_name=url_pagename)
+    if len(pages) is 0:
+        return render_to_response('404.html')
+    page = pages[0] # Specific page
+
     code = Code.objects.all().filter(page=page)[0] # Specific code
     
     # Load the HTML template with the relevant JScript code
@@ -299,5 +321,3 @@ def pages_view(request, url_username=None, url_projectname=None, url_pagename=No
         'code': code.code
         }
     return render_to_response('page.html', cookie)
-
-    

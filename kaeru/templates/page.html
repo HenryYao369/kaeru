@@ -2,8 +2,8 @@
 
 {% block content %}
 
-    <script type="text/javascript"> 
-        {{ code }}
+    <script type="text/javascript">
+        {{ code | safe }}
     </script>
 
 {% endblock %}
