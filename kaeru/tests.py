@@ -135,13 +135,125 @@ class ProjectTest(TestCase):
         self.assertEqual("MySecondProject",project.name)
 
         # Deleting a project
-        response = self.client.post('/projects/dummyName/', {'operation': 'delete',
+        response = self.client.post('/projects/dummyName/', {'operation': 'rm',
                                                             'projectname': 'MyFirstProject'})
         self.assertEqual(200, response.status_code)
 
         # Check if project has been deleted from database
         project = Project.objects.all().filter(creator=user)[0]
         self.assertEqual("MySecondProject",project.name);
+
+    # Tests user creation and deletion of project pages using the view
+    # 1-creation of project in default view
+    # 2-creation of page in project view
+    # 3-addition of code to page
+    # 4-removal of page in project view
+    def test_create_pages_view(self):
+
+        # Initial account setup and signing
+        response = self.client.post('/signup/', {'username': 'dummyName',
+                                                'password': 'dummyPass',
+                                                'email': 'dummy@email.com',
+                                                'first_name': 'Dummy',
+                                                'last_name': 'Name'})
+        self.assertEqual(200, response.status_code)
+
+        user = User.objects.get(username='dummyName')
+
+        response = self.client.post('/login/', {'username': 'dummyName',
+                                                'password': 'dummyPass'})
+        self.assertEqual(200, response.status_code)
+
+        # Creating a project through default view
+        response = self.client.post('/projects/', {'operation': 'add',
+                                                   'projectname': 'MyFirstProject'})
+        self.assertEqual(200, response.status_code)
+
+        # Check if project has been added to database
+        project = Project.objects.all().filter(creator=user)[0]
+        self.assertEqual("MyFirstProject",project.name)
+
+        # Creating a page through projects view
+        response = self.client.post('/projects/dummyName/MyFirstProject/', 
+            {'operation': 'add_page', 'pagename': 'MyFirstPage'})
+        self.assertEqual(200, response.status_code)
+
+        # Check if page has been added to database
+        page = Page.objects.all().filter(project=project)[0]
+        self.assertEqual("MyFirstPage",page.page_name)
+
+        # Check if code for page has been added to database
+        code = Code.objects.all().filter(page=page)[0]
+        self.assertEqual("",code.code)
+
+        # Deleting a page
+        response = self.client.post('/projects/dummyName/MyFirstProject/', 
+            {'operation': 'rm_page', 'pagename': 'MyFirstPage'})
+        self.assertEqual(200, response.status_code)
+
+        # Check if page has been deleted from database
+        self.assertEqual(0,len(Page.objects.all()));
+
+    # Tests user modificatio of code using the view
+    # 1-creation of project in default view
+    # 2-creation of page in project view
+    # 3-modification of code in page view
+    def test_create_pages_view(self):
+
+        # Initial account setup and signing
+        response = self.client.post('/signup/', {'username': 'dummyName',
+                                                'password': 'dummyPass',
+                                                'email': 'dummy@email.com',
+                                                'first_name': 'Dummy',
+                                                'last_name': 'Name'})
+        self.assertEqual(200, response.status_code)
+
+        user = User.objects.get(username='dummyName')
+
+        response = self.client.post('/login/', {'username': 'dummyName',
+                                                'password': 'dummyPass'})
+        self.assertEqual(200, response.status_code)
+
+        # Creating a project through default view
+        response = self.client.post('/projects/', {'operation': 'add',
+                                                   'projectname': 'MyFirstProject'})
+        self.assertEqual(200, response.status_code)
+
+        # Check if project has been added to database
+        project = Project.objects.all().filter(creator=user)[0]
+        self.assertEqual("MyFirstProject",project.name)
+
+        # Creating a page through project view
+        response = self.client.post('/projects/dummyName/MyFirstProject/', 
+            {'operation': 'add_page', 'pagename': 'MyFirstPage'})
+        self.assertEqual(200, response.status_code)
+
+        # Check if page has been added to database
+        page = Page.objects.all().filter(project=project)[0]
+        self.assertEqual("MyFirstPage",page.page_name)
+
+        # Check if code for page has been added to database
+        code = Code.objects.all().filter(page=page)[0]
+        self.assertEqual("",code.code)
+
+        # Modify the code for the page
+        message = "var x = 10"
+        response = self.client.post('/projects/dummyName/MyFirstProject/MyFirstPage/', 
+            {'operation': 'modify_code', 'code': message})
+        self.assertEqual(200, response.status_code)
+
+        # Check if code for page has been modified
+        code = Code.objects.all().filter(page=page)[0]
+        self.assertEqual(message,code.code)
+
+        # Check if code appears on the public page
+        response = self.client.get('/pages/dummyName/MyFirstProject/MyFirstPage/')
+        self.assertContains(response, message)
+
+        # Check if random code doesn't appear
+        self.assertNotContains(response, "var y = 30")
+
+        # Check for negative
 
     # Test user creation of projects
     def test_create_project(self):
