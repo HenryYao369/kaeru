@@ -122,7 +122,7 @@ class ProjectTest(TestCase):
         self.assertEqual(200, response.status_code)
 
         # Check if project has been added to database
-        project = Project.objects.all().filter(creator=user)[0]
+        project = Project.objects.get(creator=user)
         self.assertEqual("MyFirstProject",project.name)
 
         # Creating a project through general account view
@@ -140,7 +140,7 @@ class ProjectTest(TestCase):
         self.assertEqual(200, response.status_code)
 
         # Check if project has been deleted from database
-        project = Project.objects.all().filter(creator=user)[0]
+        project = Project.objects.get(creator=user)
         self.assertEqual("MySecondProject",project.name);
 
     # Tests user creation and deletion of project pages using the view
@@ -170,7 +170,7 @@ class ProjectTest(TestCase):
         self.assertEqual(200, response.status_code)
 
         # Check if project has been added to database
-        project = Project.objects.all().filter(creator=user)[0]
+        project = Project.objects.get(creator=user)
         self.assertEqual("MyFirstProject",project.name)
 
         # Creating a page through projects view
@@ -179,11 +179,11 @@ class ProjectTest(TestCase):
         self.assertEqual(200, response.status_code)
 
         # Check if page has been added to database
-        page = Page.objects.all().filter(project=project)[0]
+        page = Page.objects.get(project=project)
         self.assertEqual("MyFirstPage",page.page_name)
 
         # Check if code for page has been added to database
-        code = Code.objects.all().filter(page=page)[0]
+        code = Code.objects.get(page=page)
         self.assertEqual("",code.code)
 
         # Deleting a page
@@ -220,7 +220,7 @@ class ProjectTest(TestCase):
         self.assertEqual(200, response.status_code)
 
         # Check if project has been added to database
-        project = Project.objects.all().filter(creator=user)[0]
+        project = Project.objects.get(creator=user)
         self.assertEqual("MyFirstProject",project.name)
 
         # Creating a page through project view
@@ -229,11 +229,11 @@ class ProjectTest(TestCase):
         self.assertEqual(200, response.status_code)
 
         # Check if page has been added to database
-        page = Page.objects.all().filter(project=project)[0]
+        page = Page.objects.get(project=project)
         self.assertEqual("MyFirstPage",page.page_name)
 
         # Check if code for page has been added to database
-        code = Code.objects.all().filter(page=page)[0]
+        code = Code.objects.get(page=page)
         self.assertEqual("",code.code)
 
         # Modify the code for the page
@@ -243,7 +243,7 @@ class ProjectTest(TestCase):
         self.assertEqual(200, response.status_code)
 
         # Check if code for page has been modified
-        code = Code.objects.all().filter(page=page)[0]
+        code = Code.objects.get(page=page)
         self.assertEqual(message,code.code)
 
         # Check if code appears on the public page
