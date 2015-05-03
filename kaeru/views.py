@@ -250,18 +250,17 @@ def projects_view(request, url_username=None, url_projectname=None, url_pagename
                     contributor_name=request.POST.get('contributorname', None),
                     page_name=request.POST.get('pagename', None))
 
-        # Display project information
-        projects = Project.objects.all().filter(creator=creator,name=url_projectname)
-        if len(projects) is 0:
+        # Display project information if valid
+        try:
+            project = Project.objects.get(creator=creator,name=url_projectname)
+            cookie['username'] = url_username
+            cookie['projectname'] = url_projectname
+            cookie['iscreator'] = (url_username == username) # Dictate delete permissions
+            cookie['contributors'] = project.contributors.all()
+            cookie['pages'] = Page.objects.all().filter(project=project)
+            return render_to_response('project.html', cookie)
+        except Project.DoesNotExist:
             return render_to_response('404.html')
-        project = projects[0] # Specific project
-        
-        cookie['username'] = url_username
-        cookie['projectname'] = url_projectname
-        cookie['iscreator'] = (url_username == username) # Dictate delete permissions
-        cookie['contributors'] = project.contributors.all()
-        cookie['pages'] = Page.objects.all().filter(project=project)
-        return render_to_response('project.html', cookie)
 
     # Specified user, project, and page: display specified page
     else:
@@ -276,48 +275,35 @@ def projects_view(request, url_username=None, url_projectname=None, url_pagename
                     page_name=url_pagename,
                     code=request.POST.get('code', None))
 
-        # Display project information
-        projects = Project.objects.all().filter(creator=creator,name=url_projectname)
-        if len(projects) is 0:
+        # Display project information if valid
+        try:
+            project = Project.objects.get(creator=creator,name=url_projectname)
+            page = Page.objects.get(project=project,page_name=url_pagename)
+            code = Code.objects.get(page=page)
+            cookie['username'] = url_username
+            cookie['projectname'] = url_projectname
+            cookie['pagename'] = page.page_name
+            cookie['code'] = code.code
+            return render_to_response('pages.html', cookie)
+        except (Project.DoesNotExist, Page.DoesNotExist, Code.DoesNotExist):
             return render_to_response('404.html')
-        project = projects[0] # Specific project
-
-        pages = Page.objects.all().filter(project=project,page_name=url_pagename)
-        if len(pages) is 0:
-            return render_to_response('404.html')
-        page = pages[0] # Specific page
-
-        code = Code.objects.all().filter(page=page)[0] # Specific code
-
-        cookie['username'] = url_username
-        cookie['projectname'] = url_projectname
-        cookie['pagename'] = page.page_name
-        cookie['code'] = code.code
-        return render_to_response('pages.html', cookie)
 
 # The pages view is for public viewing of served pages
 def pages_view(request, url_username=None, url_projectname=None, url_pagename=None):
 
     if url_username is None or url_projectname is None or url_pagename is None:
         return render_to_response('404.html')
-    
+
     # Obtain the relevant JScript code associated with the page
-    creator = User.objects.get(username=url_username)
-
-    projects = Project.objects.all().filter(creator=creator,name=url_projectname)
-    if len(projects) is 0:
+    try:
+        creator = User.objects.get(username=url_username)
+        project = Project.objects.get(creator=creator,name=url_projectname)
+        page = Page.objects.get(project=project,page_name=url_pagename)
+        code = Code.objects.get(page=page)
+        # Load the HTML template with the relevant JScript code
+        cookie = {
+            'code': code.code
+            }
+        return render_to_response('page.html', cookie)
+    except (User.DoesNotExist, Project.DoesNotExist, Page.DoesNotExist, Code.DoesNotExist):
         return render_to_response('404.html')
-    project = projects[0] # Specific project
-
-    pages = Page.objects.all().filter(project=project,page_name=url_pagename)
-    if len(pages) is 0:
-        return render_to_response('404.html')
-    page = pages[0] # Specific page
-
-    code = Code.objects.all().filter(page=page)[0] # Specific code
-    
-    # Load the HTML template with the relevant JScript code
-    cookie = {
-        'code': code.code
-        }
-    return render_to_response('page.html', cookie)
