@@ -1,3 +1,4 @@
+<!-- This template is for listing the details of a project -->
 {% extends "base.html" %}
 
 {% block content %}
@@ -32,6 +33,10 @@
     </form>
     <br>
 
+    {% endif %}
+
+    {% if iscontributor %}
+
     <!-- Listing pages -->
     <h4>Pages</h4>
 
@@ -57,6 +62,10 @@
         <input type="submit" value="Submit" />
     </form>
     <br>
+
+    {% endif %}
+
+    {% if iscreator %}
 
     <!-- Deleting the project -->
     <h4>Delete Project</h4>

@@ -22,8 +22,8 @@ def handle_user_post(operation, **kwargs):
                 create_date=timezone.now()
              )
             project.save()
-            project.contributors.add(kwargs['user'])
-            project.save()
+            # project.contributors.add(kwargs['user'])
+            # project.save()
         elif operation == 'rm': # Delete the given project and all associated pieces
             project = Project.objects.get(creator=kwargs['user'], name=kwargs['project_name']) # Specific project
             pages = Page.objects.all().filter(project=project)
