@@ -238,11 +238,14 @@ def projects_view(request, url_username=None, url_projectname=None, url_pagename
                 contributor_criterion = Q(creator=user, hidden=True, contributors__username=username) # Also want to show ones contributed to
                 cookie['projects'] = Project.objects.all().filter(public_criterion | contributor_criterion)
     
-                # public_criterion = Q(hidden=False, contributors__username=url_username) # Want to show public contributions
-                # contributor_criterion = Q(hidden=True, contributors__username=url_username, contributors__username=username) # Also want to show mutual contributions
-                # cookie['contributions'] = Project.objects.all().filter(public_criterion | contributor_criterion)
+                creator = User.objects.get(username=username)
+                contributor_criterion = Q(creator=creator,contributors__username=url_username) # Want to show contribution if logged in user is owner
+                contributor_criterion2 = Q(contributors__username=(username,url_username)) # Want to show contribution if logged in user is fellow contributor
+                contributor_criterion3 = Q(hidden=False,contributors__username=url_username) # Want to show contribution if project is public
+                cookie['contributions'] = Project.objects.all().filter(contributor_criterion | contributor_criterion2 | contributor_criterion3)
     
             cookie['isuser'] = is_user
+            print cookie['contributions']
             return render_to_response('projects.html', cookie)
         except User.DoesNotExist:
             return render_to_response('404.html')
@@ -275,6 +278,7 @@ def projects_view(request, url_username=None, url_projectname=None, url_pagename
             cookie['iscreator'] = is_user # Dictate delete permissions
             cookie['iscontributor'] = is_contributor # Dictate delete permissions
             cookie['contributors'] = project.contributors.all()
+            cookie['hidden'] = project.hidden
             cookie['pages'] = Page.objects.all().filter(project=project)
             return render_to_response('project.html', cookie)
         except (User.DoesNotExist, Project.DoesNotExist):

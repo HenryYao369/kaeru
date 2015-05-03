@@ -40,6 +40,8 @@ def handle_user_post(operation, **kwargs):
 #   rm_contributor - remove a contributor from the project
 #   add_page - add a page to this project
 #   rm_page - remove a page from this project
+#   publicize - make project public
+#   privatize - make project private
 # Additional arguments:
 #   creator - user object representing the creator of the project
 #   project_name - name of the project
@@ -72,6 +74,11 @@ def handle_project_post(operation, **kwargs):
             page = Page.objects.all().filter(page_name=kwargs['page_name'],project=project)
             Code.objects.all().filter(page=page).delete()
             page.delete()
+        elif operation == 'publicize': # Add a contributor to a project
+            project.hidden = False;
+            project.save()
+        elif operation == 'privatize': # Remove a contributor from a project
+            project.hidden = True;
     except (User.DoesNotExist, Project.DoesNotExist, Page.DoesNotExist, Code.DoesNotExist):
         pass
 

@@ -12,13 +12,13 @@
         <p> <a href="/projects/{{ username }}/{{ project }}/">{{ project }}</a> </p>
     {% endfor %}
 
-    {% if isuser %}
-
     <h2>Contributions</h2>
 
     {% for project in contributions %}
-        <p> <a href="/projects/{{ username }}/{{ project }}/">{{ project }}</a> </p>
+        <p> <a href="/projects/{{ project.creator }}/{{ project }}/">{{ project }}</a> </p>
     {% endfor %}
+
+    {% if isuser %}
 
     <!-- Adding projects -->
     <h2>Add Project</h2>
