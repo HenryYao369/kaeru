@@ -396,117 +396,117 @@ class ProjectTest(TestCase):
         self.assertEqual("MyFirstProject",project.name);
 
     # Test listing contributors of projects
- #    def test_project_contributors(self):
+    def test_project_contributors(self):
 
- #        user = User.objects.get(username="anon")
+        user = User.objects.get(username="anon")
 
- #        # Creating a project under anon and adding anon as a contributor
- #        p = Project(
- #            name="MyFirstProject", 
- #            creator=user,
- #            create_date=timezone.now()
- #         )
- #        p.save()
- #        p.contributors.add(user)
- #        p.save()
+        # Creating a project under anon and adding anon as a contributor
+        p = Project(
+            name="MyFirstProject", 
+            creator=user,
+            create_date=timezone.now()
+         )
+        p.save()
+        p.contributors.add(user)
+        p.save()
 
- #        # Check if anon is a contributor
- #        project = Project.objects.all().filter(creator=user)[0]
- #        self.assertEqual("anon",project.contributors.all()[0].username);
+        # Check if anon is a contributor
+        project = Project.objects.all().filter(creator=user)[0]
+        self.assertEqual("anon",project.contributors.all()[0].username);
 
-	# #This function tests:
-	# #1-creation of code object
-	# #2-assignment of a project to it
- #    def test_project_to_codes(self):
- #        n = Code(
- #            filePathAndName = "filename",
- #            created = timezone.now()
- #        )
- #        n.save()
- #        p = Project(
- #            name="MyFirstProject", 
- #            creator=User.objects.get(username="anon"),
- #            create_date=timezone.now()
- #        )
- #        p.save()
- #        n.projects.add(p)
- #        n.save()
- #        self.assertEqual(n.projects.all()[0].name,"MyFirstProject");
+	#This function tests:
+	#1-creation of code object
+	#2-assignment of a project to it
+    def test_project_to_codes(self):
+        n = Code(
+            filePathAndName = "filename",
+            created = timezone.now()
+        )
+        n.save()
+        p = Project(
+            name="MyFirstProject", 
+            creator=User.objects.get(username="anon"),
+            create_date=timezone.now()
+        )
+        p.save()
+        n.projects.add(p)
+        n.save()
+        self.assertEqual(n.projects.all()[0].name,"MyFirstProject");
 
- #    #This function tests:
-	# #1-creation of code object
-	# #2-assignment of a code object to project object
- #    def test_codes_to_project(self):
- #        n2 = Code(
- #            filePathAndName = "filename",
- #            created = timezone.now()
- #        )
- #        n2.save()
- #        p2 = Project(
- #            name="MyFirstProject", 
- #            creator=User.objects.get(username="anon"),
- #            create_date=timezone.now()
- #        )
- #        p2.save()
- #        p2.codes.add(n2)
- #        p2.save()
- #        self.assertEqual(n2.projects.all()[0].name,"MyFirstProject");
+    #This function tests:
+	#1-creation of code object
+	#2-assignment of a code object to project object
+    def test_codes_to_project(self):
+        n2 = Code(
+            filePathAndName = "filename",
+            created = timezone.now()
+        )
+        n2.save()
+        p2 = Project(
+            name="MyFirstProject", 
+            creator=User.objects.get(username="anon"),
+            create_date=timezone.now()
+        )
+        p2.save()
+        p2.codes.add(n2)
+        p2.save()
+        self.assertEqual(n2.projects.all()[0].name,"MyFirstProject");
 
- #    def test_projectcode_to_page(self):
- #        p = Project(
- #            name="MyFirstProject",
- #            creator=User.objects.get(username="anon"),
- #            create_date=timezone.now()
- #        )
- #        p.save()
- #        c = Code(
- #            filePathAndName="filename",
- #            created=timezone.now()
+    def test_projectcode_to_page(self):
+        p = Project(
+            name="MyFirstProject",
+            creator=User.objects.get(username="anon"),
+            create_date=timezone.now()
+        )
+        p.save()
+        c = Code(
+            filePathAndName="filename",
+            created=timezone.now()
 
- #        )
- #        c.save()
- #        page = Page(
- #            page_name="pagename",
- #            page_create_date=timezone.now(),
- #            page_modify_date=timezone.now(),
- #        )
- #        page.save()
- #        page.project=p
- #        page.code_set.add(c)
- #        page.save()
- #        self.assertEqual(page.project.name,"MyFirstProject")
- #        self.assertEqual(page.code_set.all()[0].filePathAndName,"filename")
+        )
+        c.save()
+        page = Page(
+            page_name="pagename",
+            page_create_date=timezone.now(),
+            page_modify_date=timezone.now(),
+        )
+        page.save()
+        page.project=p
+        page.code_set.add(c)
+        page.save()
+        self.assertEqual(page.project.name,"MyFirstProject")
+        self.assertEqual(page.code_set.all()[0].filePathAndName,"filename")
 
- #    def test_page_to_project(self):
- #        p = Project(
- #            name="MyFirstProject",
- #            creator=User.objects.get(username="anon"),
- #            create_date=timezone.now()
- #        )
- #        p.save()
- #        page = Page(
- #            page_name="pagename",
- #            page_create_date=timezone.now(),
- #            page_modify_date=timezone.now(),
- #        )
- #        page.save()
- #        p.page_set.add(page)
- #        p.save()
- #        self.assertEqual(p.page_set.all()[0].page_name,"pagename")
+    def test_page_to_project(self):
+        p = Project(
+            name="MyFirstProject",
+            creator=User.objects.get(username="anon"),
+            create_date=timezone.now()
+        )
+        p.save()
+        page = Page(
+            page_name="pagename",
+            page_create_date=timezone.now(),
+            page_modify_date=timezone.now(),
+        )
+        page.save()
+        p.page_set.add(page)
+        p.save()
+        self.assertEqual(p.page_set.all()[0].page_name,"pagename")
 
- #    def test_page_to_code(self):
- #        c = Code(
- #            filePathAndName="filename",
- #            created=timezone.now()
+    def test_page_to_code(self):
+        c = Code(
+            filePathAndName="filename",
+            created=timezone.now()
 
- #        )
- #        c.save()
- #        page = Page(
- #            page_name="pagename",
- #            page_create_date=timezone.now(),
- #            page_modify_date=timezone.now(),
- #        )
- #        page.save()
- #        c.page=page
- #        c.save()
- #        self.assertEqual(c.page.page_name,"pagename")
+        )
+        c.save()
+        page = Page(
+            page_name="pagename",
+            page_create_date=timezone.now(),
+            page_modify_date=timezone.now(),
+        )
+        page.save()
+        c.page=page
+        c.save()
+        self.assertEqual(c.page.page_name,"pagename")
