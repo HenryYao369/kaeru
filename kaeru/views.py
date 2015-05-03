@@ -233,19 +233,16 @@ def projects_view(request, url_username=None, url_projectname=None, url_pagename
                 cookie['contributions'] = Project.objects.all().filter(contributors__username=username) # All contributions
             else: # Otherwise, only display the projects that are public or the logged in user is contributing to
                 cookie['username'] = url_username
-    
                 public_criterion = Q(creator=user, hidden=False) # Want to show public projects
                 contributor_criterion = Q(creator=user, hidden=True, contributors__username=username) # Also want to show ones contributed to
                 cookie['projects'] = Project.objects.all().filter(public_criterion | contributor_criterion)
-    
+                
                 creator = User.objects.get(username=username)
                 contributor_criterion = Q(creator=creator,contributors__username=url_username) # Want to show contribution if logged in user is owner
-                contributor_criterion2 = Q(contributors__username=(username,url_username)) # Want to show contribution if logged in user is fellow contributor
-                contributor_criterion3 = Q(hidden=False,contributors__username=url_username) # Want to show contribution if project is public
-                cookie['contributions'] = Project.objects.all().filter(contributor_criterion | contributor_criterion2 | contributor_criterion3)
+                contributor_criterion2 = Q(hidden=False,contributors__username=url_username) # Want to show contribution if project is public
+                cookie['contributions'] = Project.objects.all().filter(contributor_criterion | contributor_criterion2)
     
             cookie['isuser'] = is_user
-            print cookie['contributions']
             return render_to_response('projects.html', cookie)
         except User.DoesNotExist:
             return render_to_response('404.html')

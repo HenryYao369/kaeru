@@ -79,6 +79,7 @@ def handle_project_post(operation, **kwargs):
             project.save()
         elif operation == 'privatize': # Remove a contributor from a project
             project.hidden = True;
+            project.save()
     except (User.DoesNotExist, Project.DoesNotExist, Page.DoesNotExist, Code.DoesNotExist):
         pass
 
