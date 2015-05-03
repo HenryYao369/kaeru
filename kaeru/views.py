@@ -16,6 +16,8 @@ from kaeru.models import Project
 from kaeru.models import Page
 from kaeru.models import Code
 
+from itertools import chain
+
 import os
 import kaeru.utils
 
@@ -240,7 +242,9 @@ def projects_view(request, url_username=None, url_projectname=None, url_pagename
                 creator = User.objects.get(username=username)
                 contributor_criterion = Q(creator=creator,contributors__username=url_username) # Want to show contribution if logged in user is owner
                 contributor_criterion2 = Q(hidden=False,contributors__username=url_username) # Want to show contribution if project is public
-                cookie['contributions'] = Project.objects.all().filter(contributor_criterion | contributor_criterion2)
+                # Want to show contribution if logged in user is fellow contributor
+                cookie['contributions'] = list(chain(Project.objects.all().filter(contributor_criterion | contributor_criterion2), 
+                        Project.objects.all().filter(contributors__username__contains=username).filter(contributors__username__contains=url_username)))
     
             cookie['isuser'] = is_user
             return render_to_response('projects.html', cookie)
