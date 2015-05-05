@@ -188,7 +188,7 @@ class ProjectTest(TestCase):
     # 1-creation of project in default view
     # 2-creation of page in project view
     # 3-modification of code in page view
-    def test_create_pages_view(self):
+    def test_create_code_view(self):
 
         # Initial account setup and signing
         response = self.client.post('/signup/', {'username': 'dummyName',
@@ -380,43 +380,43 @@ class ProjectTest(TestCase):
         response = self.client.post('/logout/')
 
     # Test user creation of projects
- #    def test_create_project(self):
+    def test_create_project(self):
 
- #        user = User.objects.get(username="anon")
+        user = User.objects.get(username="anon")
 
- #        # Creating a project under anon
- #        Project(
- #            name="MyFirstProject", 
- #            creator=user,
- #            create_date=timezone.now()
- #         ).save()
+        # Creating a project under anon
+        Project(
+            name="MyFirstProject", 
+            creator=user,
+            create_date=timezone.now()
+         ).save()
 
- #        # Check if project has been added to database
- #        project = Project.objects.all().filter(creator=user)[0]
- #        self.assertEqual("MyFirstProject",project.name);
+        # Check if project has been added to database
+        project = Project.objects.all().filter(creator=user)[0]
+        self.assertEqual("MyFirstProject",project.name);
 
- #    # Test listing contributors of projects
- #    def test_project_contributors(self):
+    # Test listing contributors of projects
+    def test_project_contributors(self):
 
- #        user = User.objects.get(username="anon")
+        user = User.objects.get(username="anon")
 
- #        # Creating a project under anon and adding anon as a contributor
- #        p = Project(
- #            name="MyFirstProject", 
- #            creator=user,
- #            create_date=timezone.now()
- #         )
- #        p.save()
- #        p.contributors.add(user)
- #        p.save()
+        # Creating a project under anon and adding anon as a contributor
+        p = Project(
+            name="MyFirstProject", 
+            creator=user,
+            create_date=timezone.now()
+         )
+        p.save()
+        p.contributors.add(user)
+        p.save()
 
- #        # Check if anon is a contributor
- #        project = Project.objects.all().filter(creator=user)[0]
- #        self.assertEqual("anon",project.contributors.all()[0].username);
+        # Check if anon is a contributor
+        project = Project.objects.all().filter(creator=user)[0]
+        self.assertEqual("anon",project.contributors.all()[0].username);
 
-	# #This function tests:
-	# #1-creation of code object
-	# #2-assignment of a project to it
+	#This function tests:
+	#1-creation of code object
+	#2-assignment of a project to it
  #    def test_project_to_codes(self):
  #        n = Code(
  #            filePathAndName = "filename",
