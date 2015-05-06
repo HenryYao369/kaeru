@@ -1,0 +1,401 @@
+This is a documentation of the API
+
+
+
+NOTE: Google Chrome does not support windows.resizeTo, the window is not resized to the
+size given by user. When restore window is pressed, the page will become unrecognizable
+due to anchoring. This is not an issue on firefox/IE. To test the API on chrome, you
+will have to resize the window manually to a large enough size and then refresh the page 
+so everything loads correctly.
+
+
+
+
+Concept: This API is designed such that the users can code
+their websites in a object oriented manner. I have also made
+JavaScript much easier to think about than its native state.
+The core concept behind this design are sections and elements.
+Sections are regions on the screen that the user can declare, while
+elements are buttons, textfields, radios, paragraphs, etc. Sections
+can hold elements and other sections, but elements may not hold
+sections. With this breakdown, we have a tree like structure much
+like JavaScript's DOM elements. The root Section is its own class
+called Page, which also defines the screen size and title on creation.
+
+In the current state, the API supports paragraphs, texts, hyperlinks,
+radios, buttons, textfields, and forms that JavaScript has. Additional
+object types can be ported over quite easily. The API also handles anchoring,
+much like windows forms. The API also uses absolute positioning, which means
+that the user can declare their object to be a certain width and height and also
+declare where their object will appear on the screen.
+
+Known issues/design decisions/features to implement
+-it is possible to get elements on top of other elements during resize because 
+of anchoring (possible design: set minimum position/size for objects)
+-Google Chrome does not support windows.resizeTo, the window is not resized to the
+size given by user. When restore window is pressed, the page will become unrecognizable
+due to anchoring. This is not an issue on firefox/IE
+-Objects appear outside of the Section they are in, this can be disabled quite easily
+with minimal changes. Note that this is not implemented because I feel it would look
+better this way (although hiding the object outside of its own section make sense too)
+-some security issues can be solved by implementing some of the research findings documented
+in security_research file
+
+
+Use: To use this API, include the library as a script inside the <HEAD>
+Example: 
+<HEAD>
+<script type="text/javascript" src="library.js"></script>
+</HEAD>
+
+
+
+Class TextObject
+
+desc: an object representing text
+
+// methods seen by user
+
+TextObject(text)
+-returns a TextObject that represents a given String text
+-text is not required as a parameter, defaults to ""
+
+setText(newtext)
+-sets the text of the TextObject to newtext
+
+getText()
+-returns the text the TextObject holds
+
+// methods not seen by user
+
+addToSection(section)
+-adds this object to the specified section
+
+removeFromSection(section)
+-removes this object from the specified section
+
+addToElement(element)
+-adds this object to the specified element
+
+removeFromElement(element)
+-removes this object from the specified element
+
+
+Class HyperLinkObject
+
+desc: an object representing a text and its hyperlink
+
+// methods seen by user
+
+HyperLinkObject(text,link)
+-returns a HyperLinkObject that shows the given text and links 
+to the given link
+-text is not required as a parameter, defaults to ""
+-link is not required as a parameter, defaults to none
+
+setText(newtext)
+-sets the text of the HyperLinkObject to newtext
+
+getText()
+-returns the text the HyperLinkObject holds
+
+setLink(newlink)
+-sets the link of the HyperLinkObject to newlink
+
+getLink()
+-returns the link the HyperLinkObject holds
+
+// methods not seen by user
+
+addToSection(section)
+-adds this object to the specified section
+
+removeFromSection(section)
+-removes this object from the specified section
+
+addToElement(element)
+-adds this object to the specified element
+
+removeFromElement(element)
+-removes this object from the specified element
+
+
+Class ParagraphObject
+
+desc: an object representing a paragraph, contains TextObjects and HyperLinkObjects
+
+// methods seen by user
+
+ParagraphObject(width,height)
+-returns a ParagraphObject with the given height and width
+-height and width are not required, but need to be given for anchors
+and resizing to work
+
+setAnchors(top,right,bottom,left)
+-sets the anchors to their respective values
+-Example: setAnchors(true,true,true,false) sets the anchors to top,right,bottom
+
+addText(Object)
+-adds the TextObject or HyperLinkObject given as Object to the ParagraphObject
+
+removeText(Object)
+-removes the TextObject or HyperLinkObject given as Object to the ParagraphObject
+
+// methods not seen by user
+
+addToSection(section)
+-adds this object to the specified section
+
+removeFromSection(section)
+-removes this object from the specified section
+
+resizeAnchor(newx,newy)
+-function automatically called when window resizes, handles anchor logic
+
+
+Class ButtonObject
+
+desc: an object representing a button, contains a single TextObject that appears on
+the button
+
+// methods seen by user
+
+ButtonObject(width,height,text,func)
+-returns a ButtonObject that shows the given text inside the button, with the given
+width and height, and the onclick function given
+-height and width are not required, but need to be given for anchors
+and resizing to work
+-func is not required, defaults to none
+-text is not required, defaults to none
+
+setAnchors(top,right,bottom,left)
+-sets the anchors to their respective values
+-Example: setAnchors(true,true,true,false) sets the anchors to top,right,bottom
+
+setInnerText(TextObject)
+-sets the text on the ButtonObject to the given TextObject, replacing the old one
+
+getInnerText()
+-returns the TextObject associated with this ButtonObject
+
+setOnClick(func)
+-sets the onclick function for this button to the given func
+
+// methods not seen by user
+
+addToSection(section)
+-adds this object to the specified section
+
+removeFromSection(section)
+-removes this object from the specified section
+
+resizeAnchor(newx,newy)
+-function automatically called when window resizes, handles anchor logic
+
+
+Class RadioObject
+
+desc: an object representing a series of radios, includes the descriptions of
+options.
+
+// methods seen by user
+
+RadioObject(name, amount, orient, width, height)
+-returns a RadioObject associated with the given name, with amount number of options,
+with orient orientation, and with the given width and height
+-orient can take values of either "horizontal" or "vertical", which dictates which
+direction the options grow in. Defaults to "vertical"
+-height and width are not required, but need to be given for anchors
+and resizing to work
+
+setAnchors(top,right,bottom,left)
+-sets the anchors to their respective values
+-Example: setAnchors(true,true,true,false) sets the anchors to top,right,bottom
+-Note: RadioObject only supports anchors of either left or right, and top or bottom. Hence,
+you may not anchor both left and right or top and bottom.
+
+addOption()
+-adds an additional option to the radio (new option needs to be configured)
+
+deleteOption(index)
+-deletes the option indicated by the index (0 indexed)
+
+getNumberOfOptions()
+-returns the total number of options
+
+configureOption(index,value,text)
+-configures the option indicated by the index to hold the given value and be 
+shown as the given text (value is internal, text is external)
+
+setOrientation(orientation)
+-changes the orientation to the new orientation
+
+getOrientation()
+-returns the current orientation
+
+getCheckedValue()
+-returns the value of the option that is currently selected
+
+// methods not seen by user
+
+addToSection(section)
+-adds this object to the specified section
+
+removeFromSection(section)
+-removes this object from the specified section
+
+resizeAnchor(newx,newy)
+-function automatically called when window resizes, handles anchor logic
+
+
+Class TextFieldObject
+
+desc: an object representing a text field (area)
+
+// methods seen by user
+
+TextFieldObject(width, height, defaultvalue)
+-returns a TextFieldObject with the defaultvalue shown in the textfield and of size
+width and height
+-height and width are not required, but need to be given for anchors
+and resizing to work
+-defaultvalue is not required, defaults to none
+
+setAnchors(top,right,bottom,left)
+-sets the anchors to their respective values
+-Example: setAnchors(true,true,true,false) sets the anchors to top,right,bottom
+-Note: RadioObject only supports anchors of either left or right, and top or bottom. Hence,
+you may not anchor both left and right or top and bottom.
+
+getValue()
+-returns the value in the textfield
+
+setValue(text)
+-sets the value in the textfield to the given text
+
+// methods not seen by user
+
+addToSection(section)
+-adds this object to the specified section
+
+removeFromSection(section)
+-removes this object from the specified section
+
+resizeAnchor(newx,newy)
+-function automatically called when window resizes, handles anchor logic
+
+
+Class BreakObject (depreciated, still functional)
+
+desc: an object represents a break
+
+// methods seen by user
+
+BreakObject()
+-returns a BreakObject
+
+// methods not seen by user
+
+addToSection(section)
+-adds this object to the specified section
+
+removeFromSection(section)
+-removes this object from the specified section
+
+
+Class Section
+
+desc: an object representing a container, which can be a form as well 
+
+// methods seen by user
+
+Section(width,height,isform)
+-returns a Section with the given width and height. Section acts as a form if isform is true,
+else it acts like a normal container
+
+appendElement(elementobject, mode, x, y)
+-appends the elementobject to this Section
+-if mode is specified, then the object is indexed x pixels to the right and y pixels to the bottom of the left
+corner of the section
+-mode is either ADD_CORNER or ADD_CENTER, this determines either the top left corner of the object or the center of the object
+is used to index (x,y) away from the section
+
+removeElement(elementobject)
+-removes the elementobject from this Section
+
+appendSection(section, mode, x, y)
+-appends the section to this section
+-if mode is specified, then the section is indexed x pixels to the right and y pixels to the bottom of the left
+corner of the section
+-mode is either ADD_CORNER or ADD_CENTER, this determines either the top left corner of the section or the center of the section
+is used to index (x,y) away from the section
+
+removeSection(section)
+-removes the section from this section
+
+addFormAction(link)
+-changes the form's action to the link
+-only works if the Section is a form
+
+addBreak()
+-adds a break to the Section in order
+
+addSubmit(customonclick)
+-adds a submit button to the Section
+-customonclick is not required, it is a way to modify what happens when the submit button is clicked
+-currently there is no support for resizing and anchoring for the submit button. If such behavior is
+necessary, please use the ButtonObject (this is because the whole form might be depreciated as per design)
+
+// methods not seen by user
+
+addToSection(section)
+-adds this object to the specified section
+
+removeFromSection(section)
+-removes this object from the specified section
+
+resizeAnchor(newx,newy)
+-function automatically called when window resizes, handles anchor logic
+
+
+Class Page
+
+desc: an object representing the page the user is creating
+
+// methods seen by user
+
+Page(width,height,title)
+-returns a page with the given width and height, and with the given title.
+-title is not required, defaults to nothing
+
+getWidth()
+-returns the width
+
+getHeight()
+-returns the height
+
+getTitle()
+-returns the title
+
+setTitle(title)
+-sets the title
+
+appendElement(elementobject, mode, x, y)
+-appends the elementobject to this Section
+-if mode is specified, then the object is indexed x pixels to the right and y pixels to the bottom of the left
+corner of the section
+-mode is either ADD_CORNER or ADD_CENTER, this determines either the top left corner of the object or the center of the object
+is used to index (x,y) away from the section
+
+removeElement(elementobject)
+-removes the elementobject from this page
+
+appendSection(section, mode, x, y)
+-appends the section to this section
+-if mode is specified, then the section is indexed x pixels to the right and y pixels to the bottom of the left
+corner of the section
+-mode is either ADD_CORNER or ADD_CENTER, this determines either the top left corner of the section or the center of the section
+is used to index (x,y) away from the section
+
+removeSection(section)
+-removes the section from this page
