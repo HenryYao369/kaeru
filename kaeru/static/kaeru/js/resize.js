@@ -1,3 +1,4 @@
+
 //Changes the width of 'target' based on the dx and the width of 'other' to compensate
 function changeWidth(target, other, dx){
   //If the style.width hasn't been set yet, it needs to be set

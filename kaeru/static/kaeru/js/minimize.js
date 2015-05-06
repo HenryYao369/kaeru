@@ -1,7 +1,5 @@
-//You can get situations where a max button is hidden when you minimize more than one window
-//Need to reset the sizes of the windows that get changed from the manual resizing
-//Make the buttons better
-
+//There are occasionally glitches where minimization does not work properly, not sure
+//which situation causes it because could not repeat the error
 
 var directory = $('#directory');
 var code = $('#code');
