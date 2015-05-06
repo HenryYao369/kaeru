@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script>
+
+$("#table").ready(function() {
+    $('#table').bind('rowAddOrRemove', function(event){
+        var ii=document.all.table.rows.length;
+
+        $("#menu"+ii).change(function() {
+
+            var el = $(this) ;
+            if(el.val() === "list" ) {
+                $("#second"+ii).empty() ;
+                $("#second"+ii).append("<option>Boolean</option>");
+                $("#second"+ii).append("<option>String</option>");
+                $("#second"+ii).append("<option>Integer</option>");
+                $("#second"+ii).append("<option>"+$("#tablename").val()+"</option>"+
+                                        "{% for option in options %}"+
+                                        "<option>"+"{{ option }}"+"</option>"+
+                                        "{% endfor %}"
+
+                                        );
+
+
+            }
+             else if(el.val()==="string"){
+                $("#second"+ii).empty() ;
+                $("#second"+ii).append('<option value="128">128</option>');
+                $("#second"+ii).append('<option value="256">256</option>');
+                $("#second"+ii).append('<option value=ii>'+'</option>');
+            }
+             else{
+                 $("#second"+ii).empty() ; }
+        });
+   });
+});
+
+</script>
+
+<script language="javascript">
+
+function insertrow(){
+    newRow=document.all.table.insertRow(-1);
+    var i = document.all.table.rows.length;
+    newcell=newRow.insertCell();
+    newcell.innerHTML='<input type="text" class="item'+i+'" id="text'+i+'" name="name" />';
+    newcell=newRow.insertCell() ;
+    newcell.innerHTML='<select class="item'+i+'" id= "menu'+i+'" name="type" ><option value="integer">Integer</option><option value="string">String</option><option value="boolean">Boolean</option><option value="date">Date</option><option value="list">List</option></select><select id="second'+i+'" class="item'+i+'"  name="second" ></select>';
+    newcell=newRow.insertCell() ;
+    newcell.innerHTML='<input type="checkbox" class="item'+i+'" name="allownull" />';
+    $('#table').trigger('rowAddOrRemove');
+}
+
+function deleterow(){
+
+    var lastRowIndex=document.all.table.rows.length-1;
+    document.all.table.deleteRow(lastRowIndex);
+    $('#table').trigger('rowAddOrRemove');
+}
+
+
+</script>
+
+<script language="javascript">
+
+$.fn.serializeObject = function(){
+    var output = {};
+    var array = this.serializeArray();
+    $.each(array, function() {
+        if (output[this.name] !== undefined) {
+            if (!output[this.name].push) {
+                output[this.name] = [output[this.name]];
+            }
+            output[this.name].push(this.value || '');
+        }
+        else {
+            output[this.name] = this.value || '';
+        }
+    });
+    return output;
+};
+
+$(function() {
+    $('form').submit(function() {
+        $('#result').text("{\n");
+        $('#result').append('"tablename"'+':'+'"'+$("#tablename").val()+'"'+",\n");
+        var ii=document.all.table.rows.length;
+        $('#result').append('"fields": [\n');
+        for(i=2;i<ii;i++){
+
+        $('#result').append(JSON.stringify($(".item"+i).serializeObject())+",\n");
+
+        }
+        $('#result').append(JSON.stringify($(".item"+ii).serializeObject())+"\n");
+        $('#result').append(']\n');
+        $('#result').append('}');
+        return false;
+    });
+});
+
+
+
+</script>
+
+
+<left>
+
+    <input name="button1" type="button" onClick="insertrow()" value="add row">
+    <input name="button2" type="button" onClick="deleterow()" value="delete row">
+
+</left>
+
+<form action="" method="post">
+    <td>Table Name<input name="tablename" id="tablename" type="text" value={{ jsonin.tablename }}></td>
+    <table border="1" id="table" name="table" >
+        <tr>
+            <th>Data Name</th>
+            <th>Data Type</th>
+            <th>Allow Null</th>
+        </tr>
+
+
+
+        {% for field in jsonin.fields %}
+        <tr>
+            <td><input name="name" type="text" class="item{{ forloop.counter|add:1 }}" value={{ field.name }}></td>
+            <td><select class="item{{ forloop.counter|add:1 }}" id="menu{{ forloop.counter|add:1 }}" name="menu" value={{ field.type }}>
+                <option value="integer" {% if field.type == "integer" %} selected="selected" {% endif %} >Integer</option>
+                <option value="string"{% if field.type == "string" %} selected="selected" {% endif %} >String</option>
+                <option value="boolean" {% if field.type == "boolean" %} selected="selected" {% endif %} >Boolean</option>
+                <option value="date" {% if field.type == "date" %} selected="selected" {% endif %} >Date</option>
+                <option value="list"{% if field.type == "list" %} selected="selected" {% endif %} >List</option>
+            </select>
+            {% if field.type == "list" %}
+            <select class="item{{ forloop.counter|add:1 }}" id="second{{ forloop.counter|add:1 }}"   name="second" value={{ field.second }}>
+                <option {% if field.second == "Boolean" %} selected="selected" {% endif %}>Boolean </option>
+                <option {% if field.second == "String" %} selected="selected" {% endif %}>String</option>
+                <option {% if field.second == "Integer" %} selected="selected" {% endif %}>Integer</option>
+                <option {% if field.second == jsonin.tablename %} selected="selected" {% endif %}>{{ jsonin.tablename }}</option>
+           {% for option in options %}
+               <option {% if field.second == option %} selected="selected" {% endif %}>{{ option }}</option>
+            {% endfor %}
+            </select>
+            {% endif %}
+
+            <td>
+                <input type="checkbox" name="allownull" class="item{{ forloop.counter|add:1 }}" {% if field.allownull == "on" %}checked {% endif %}/>
+            </td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+    <input name="button3" type="submit" value="submit">
+</form>
+<pre id="result">
+</pre>
+</body>
+</html>
