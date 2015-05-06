@@ -1,0 +1,48 @@
+Isolating JavaScript
+
+
+Problem:
+
+We want to isolate the JavaScript of a Host and a potential Attacker.
+
+(?)We want to isolate the JavaScript of an honest use, Honest, and a malicious user, Attacker.
+
+
+Solutions:
+
+We say that the Attacker is successful if it is able to read or write the properties of objects defined by Host or Honest. Therefore, we want to disallow any user from accessing content that is not the users'. We look at this problem as Host vs. Attacker and Honest vs. Attacker:
+
+
+Host vs. Attacker: A potential solution is to set up a conceptual blacklist of properties and methods that we do not allow the users to use/modify (Note: it logically follows from latter arguments that we should instead construct an allowlist of properties and methods we allow the users to use/modify). Then, we set up a system of filter, rewrite, or wrapping that handles the logic when the users do try to access the methods/properties in the blacklist.
+
+We define filter, rewrite, wrapping as follows:
+
+Filter: Before the user code is loaded into the execution environment, statically analyze if the code conform to a guideline or blacklist. If the criteria is not met, we reject the code.
+
+Rewrite: Insert runtime checks for users' code. When the users' code does not conform to the criteria, we replace their code to prevent undesirable actions.
+
+Wrapping: We wrap users' code inside our own functions that include runtime checks. When the users' code does not conform to the criteria, we reject the code or replace it.
+
+Then, it becomes a matter of being able to detect when the users' code accesses the blacklisted methods/properties. In JavaScript, the only ways to access a method or property is through x, e.x, e1[e2]. However, we need to keep in mind that there is a difference between explicit and implicit property access:
+
+Explicit: the user explicitly uses any of x, e.x, e1[e2]
+
+Implicit: the user calls functions that use any of x, e.x, e1[e2] in its execution. Example: "a" + 1 implicitly calls the toString() method on the int 1
+
+Then, we see that it is hard to define a physical blacklist of properties and methods to isolate from the user since there can be numerous implicit method calls and property accesses. Thus, it logically follows it is easier to set up a allowlist where we include methods we allow the users to access. However, I will continue to use blacklist conceptually to define the methods we do not allow the users to use. Some native JavaScript methods that are implicitly called include {toString, toNumber, valueOf, length, prototype, constructor, message, arguments, Object, Array, RegExp}.
+
+Another important access we should isolate from the user is the global object. In JavaScript, the only ways to return a pointer to the global object is through this, valueOf() on Object.prototype, and native methods like concat, sort, reverse of Array.prototype. These methods we should abstract away from the users' code. Note: the scope property accesses the global object but never returns it as part of any final computation.
+
+Another important access we should take away from the user is dynamically generated code. This means we should restrict usage of eval, Function, and constructor.
+
+
+Honest vs. Attacker: A potential solution is to set up unique program ids noted as p_id for each user that we append to the beginning of all user defined methods. This would take away the possibility of a user being able to access another user's code. Example: o.myownmethod() -> o.user123_myownmethod()
+
+Difficulties with this approach include the native JavaScript methods. Because these methods are not unique to the user's program, they will be referenced by native JavaScript and should not be tagged by p_id. Therefore, we will only perform this tag on any methods that are not in the native JavaScript methods list. This list (may be incomplete) is found as follows: {NaN,Infinity,undefined,eval,parseInt,parseFloat,IsNaN,IsFinite,Object,Function,Array,String,Number,Boolean,Date,RegExp,Error,RangeError,ReferenceError,TypeError,SyntaxError,EvalError,constructor,toString,toLocaleString,valueOf,hasOwnProperty,propertyIsEnumerable,isPrototypeOf}.
+
+
+Drawbacks:
+
+Filter, Rewrite, Wrapping all reduces the efficiency of the code. Depending on the complexity of the check, this may or may not be critical.
+
+Caja provides a sort of sandbox and is currently available. The advantages/disadvantages of this design vs. Caja is unknown. However, it is confirmed that Caja does not protect against any DDOS attacks as simple as while (1) {}.

@@ -8,14 +8,18 @@ from django.http import HttpResponse
 from django.shortcuts import render_to_response
 from django.core.context_processors import csrf
 from django.contrib.auth.models import User
-from kaeru.models import Project
 from django.utils import timezone
 from django.db.models import Q
 
 from django.utils import timezone
+from kaeru.models import Project
+from kaeru.models import Page
 from kaeru.models import Code
 
+from itertools import chain
+
 import os
+import kaeru.utils
 
 # These pages should live in 'kaeru/templates/about/'
 # Alternatively, these names could live in a database
@@ -150,83 +154,6 @@ def index_view(request):
 # TODO: Code that changes this view when you're logged in or not
 def ide_view(request):
     return render_to_response('ide.html', {})
-    
-@login_required
-def projects_view(request, urlusername=None, urlprojectname=None):
-
-    # Get information
-    cookie = _get_csrf_cookie(request)
-    username = request.user.username # Username info
-    isuser = (urlusername is None) or (username == urlusername) # Whether or not user is responsible for this view
-
-    # Specified user: display specified user's projects page
-    if (urlusername is None) or (urlusername is not None and urlprojectname is None):
-
-        if isuser:
-            user = User.objects.get(username=username)
-        else:
-            user = User.objects.get(username=urlusername)
-
-        # Handle POST requests
-        if request.method == "POST":
-            operation = request.POST.get('operation', None)
-            projectname = request.POST.get('projectname', None)
-            hidden = request.POST.get('hidden', False)
-            if user is not None and projectname is not None and isuser:
-                if operation == 'delete': # Delete the given project
-                    Project.objects.all().filter(creator=user).filter(name=projectname).delete()
-                elif operation == 'add': # Add a new project
-                    p = Project(
-                        name=projectname, 
-                        creator=user,
-                        hidden=hidden,
-                        create_date=timezone.now()
-                     )
-                    p.save()
-                    p.contributors.add(user)
-                    p.save()
-
-        # Display project listings
-        if isuser: # Own projects
-            cookie['username'] = username
-            cookie['projects'] = Project.objects.all().filter(creator=user) # All created projects
-        else: # Others' projects
-            cookie['username'] = urlusername
-            publiccriterion = Q(creator=user, hidden=False) # Want to show public projects
-            contributorcriterion = Q(creator=user, hidden=True, contributors__username=username) # Also want to show contributed projects
-            cookie['projects'] = Project.objects.all().filter(publiccriterion | contributorcriterion)
-        cookie['isuser'] = isuser
-        return render_to_response('projects.html', cookie)
-
-    # Specified user and project: display specified project page
-    elif urlusername is not None and urlprojectname is not None:
-        # Handle POST requests
-        if request.method == "POST":
-            operation = request.POST.get('operation', None)
-            contributorname = request.POST.get('contributorname', None)
-            if isuser:
-                if operation == 'addcontributor': # Add a contributor to a project
-                    project = Project.objects.all().filter(name=urlprojectname)[0] # Specific project
-                    contributor = User.objects.get(username=contributorname)
-                    project.contributors.add(contributor)
-                    project.save()
-                elif operation == 'rmcontributor': # Remove a contributor from a project
-                    project = Project.objects.all().filter(name=urlprojectname)[0] # Specific project
-                    contributor = User.objects.get(username=contributorname)
-                    project.contributors.remove(contributor)
-                    project.save()
-
-        # Display project information
-        project = Project.objects.all().filter(name=urlprojectname) # Specific project
-        cookie['username'] = urlusername
-        cookie['projectname'] = urlprojectname
-        cookie['iscreator'] = (urlusername == username) # Dictate delete permissions
-        cookie['contributors'] = project[0].contributors.all() # TODO: Change so that we don't use zero-index
-        return render_to_response('project.html', cookie)
-
-    # Other: do nothing
-    else:
-        return None
 
 def signup_view(request):
     cookie = _get_csrf_cookie(request)
@@ -273,3 +200,144 @@ def signup_view(request):
     else:
         # Show the sign up page
         return render_to_response(url, cookie)
+
+# The projects view is for user-based administrative management.
+# Specifically, it allows them to do the following: 
+#   - View their projects, pages, and code
+#   - Create projects, pages for projects, and code for projects
+#   - Update/Modify their projects, pages, and code
+@login_required
+def projects_view(request, url_username=None, url_projectname=None, url_pagename=None):
+
+    # Get information
+    cookie = _get_csrf_cookie(request)
+    username = request.user.username # Username info
+    is_user = (url_username is None) or (username == url_username) # Whether or not user is responsible for this view
+
+    # Specified user: display specified user's projects page
+    if url_projectname is None:
+
+        try:
+            if is_user:
+                user = User.objects.get(username=username)
+            else:
+                user = User.objects.get(username=url_username)
+    
+            # Handle POST requests
+            if request.method == "POST":
+                if is_user:
+                    kaeru.utils.handle_user_post(
+                        request.POST.get('operation', None), 
+                        user=user, 
+                        project_name=request.POST.get('projectname', None), 
+                        hidden=request.POST.get('hidden', False))
+    
+            # Display project listings
+            if is_user: # Display all projects if user owns this account
+                cookie['username'] = username
+                cookie['projects'] = Project.objects.all().filter(creator=user) # All created projects
+                cookie['contributions'] = Project.objects.all().filter(contributors__username=username) # All contributions
+            else: # Otherwise, only display the projects that are public or the logged in user is contributing to
+                cookie['username'] = url_username
+                public_criterion = Q(creator=user, hidden=False) # Want to show public projects
+                contributor_criterion = Q(creator=user, hidden=True, contributors__username=username) # Also want to show ones contributed to
+                cookie['projects'] = Project.objects.all().filter(public_criterion | contributor_criterion)
+                
+                creator = User.objects.get(username=username)
+                contributor_criterion = Q(creator=creator,contributors__username=url_username) # Want to show contribution if logged in user is owner
+                contributor_criterion2 = Q(hidden=False,contributors__username=url_username) # Want to show contribution if project is public
+                # Want to show contribution if logged in user is fellow contributor
+                cookie['contributions'] = list(chain(Project.objects.all().filter(contributor_criterion | contributor_criterion2), 
+                        Project.objects.all().filter(contributors__username__contains=username).filter(contributors__username__contains=url_username)))
+    
+            cookie['isuser'] = is_user
+            return render_to_response('projects.html', cookie)
+        except User.DoesNotExist:
+            return render_to_response('404.html')
+
+    # Specified user and project: display specified project page
+    elif url_pagename is None:
+        try:
+            creator = User.objects.get(username=url_username)
+            # Check if contributor
+            user = User.objects.get(username=username)
+            project = Project.objects.get(creator=creator,name=url_projectname)
+            is_contributor = is_user or (not project.hidden) or (user in project.contributors.all())
+            if not is_contributor:
+                return render_to_response('private.html')
+
+            # Handle POST requests
+            if request.method == "POST":
+                if is_contributor:
+                    kaeru.utils.handle_project_post(
+                        request.POST.get('operation', None), 
+                        creator=creator, 
+                        project_name=url_projectname, 
+                        contributor_name=request.POST.get('contributorname', None),
+                        page_name=request.POST.get('pagename', None))
+
+            # Display project information if valid
+            project = Project.objects.get(creator=creator,name=url_projectname)
+            cookie['username'] = url_username
+            cookie['projectname'] = url_projectname
+            cookie['iscreator'] = is_user # Dictate delete permissions
+            cookie['iscontributor'] = is_contributor # Dictate delete permissions
+            cookie['contributors'] = project.contributors.all()
+            cookie['hidden'] = project.hidden
+            cookie['pages'] = Page.objects.all().filter(project=project)
+            return render_to_response('project.html', cookie)
+        except (User.DoesNotExist, Project.DoesNotExist):
+            return render_to_response('404.html')
+
+    # Specified user, project, and page: display specified page
+    else:
+        try:
+            creator = User.objects.get(username=url_username)
+            # Check if contributor
+            user = User.objects.get(username=username)
+            project = Project.objects.get(creator=creator,name=url_projectname)
+            is_contributor = is_user or (not project.hidden) or (user in project.contributors.all())
+            if not is_contributor:
+                return render_to_response('private.html')
+
+            # Handle POST requests
+            if request.method == "POST":
+                if is_contributor:
+                    kaeru.utils.handle_page_post(
+                        request.POST.get('operation', None), 
+                        creator=creator, 
+                        project_name=url_projectname,
+                        page_name=url_pagename,
+                        code=request.POST.get('code', None))
+
+            # Display project information if valid
+            project = Project.objects.get(creator=creator,name=url_projectname)
+            page = Page.objects.get(project=project,page_name=url_pagename)
+            code = Code.objects.get(page=page)
+            cookie['username'] = url_username
+            cookie['projectname'] = url_projectname
+            cookie['pagename'] = page.page_name
+            cookie['code'] = code.code
+            return render_to_response('pages.html', cookie)
+        except (Project.DoesNotExist, Page.DoesNotExist, Code.DoesNotExist):
+            return render_to_response('404.html')
+
+# The pages view is for public viewing of served pages
+def pages_view(request, url_username=None, url_projectname=None, url_pagename=None):
+
+    if url_username is None or url_projectname is None or url_pagename is None:
+        return render_to_response('404.html')
+
+    # Obtain the relevant JScript code associated with the page
+    try:
+        creator = User.objects.get(username=url_username)
+        project = Project.objects.get(creator=creator,name=url_projectname)
+        page = Page.objects.get(project=project,page_name=url_pagename)
+        code = Code.objects.get(page=page)
+        # Load the HTML template with the relevant JScript code
+        cookie = {
+            'code': code.code
+            }
+        return render_to_response('page.html', cookie)
+    except (User.DoesNotExist, Project.DoesNotExist, Page.DoesNotExist, Code.DoesNotExist):
+        return render_to_response('404.html')

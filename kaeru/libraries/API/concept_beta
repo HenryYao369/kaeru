@@ -1,0 +1,69 @@
+Interface Map {
+void Clear();
+Boolean containsValue(V);
+Boolean containsKey(K);
+V get(K);
+void put(K,V);
+void putAll(Map);
+Integer size();
+V remove(K);
+}
+
+class Section {
+List sectionChildren; // a list of children sections
+List elementList; // a list of elements held by this Section
+Integer height (Get, Set);
+Integer width (Get, Set);
+String id (Get, Set);
+Map attributes; // a map of attributes names and its value
+Section parent (Get, Set);
+Integer centerx (Get, Set); // center's x value
+Integer centery (Get, Set); // center's y value
+}
+
+abstract class Element {
+Integer height (Get, Set);
+Integer width (Get, Set);
+String id (Get, Set);
+Map attributes; // a map of attributes names and its value
+Section holder (Get, Set);
+Integer centerx (Get, Set); // center's x value
+Integer centery (Get, Set); // center's y value
+Function onClick (Get, Set);
+}
+
+class HyperLink extends Element {
+String text (Get, Set); // text that appears
+String link (Get, Set); // the hyperlink
+}
+
+class Button extends Element {
+String innerText (Get, Set); // text on the button
+Map textAttributes; // a map of attributes for the innerText
+}
+
+class TextField extends Element {
+String text (Get, Set); // text in the textfield currently
+Enum limits; // limits on what can go in the textfield
+Function warning; // pops up a warning when certain conditions are fulfilled
+}
+
+class Submit extends Button {
+List elements; // elements this submitter is responsible for
+}
+
+class CheckBox extends Element {
+Boolean status (Get, Set); // whether or not the checkbox is checked
+}
+
+class Radio extends Element {
+List choices; // a list of Strings containing choices
+String checked; // the String checked
+}
+
+class Page {
+Integer width (Get, Set);
+Integer height (Get, Set);
+String title (Get, Set); // title of the page
+Section root; // root Section
+}

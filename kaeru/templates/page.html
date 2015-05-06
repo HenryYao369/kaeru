@@ -1,0 +1,10 @@
+<!-- This template is for executing and displaying the code for a page -->
+{% extends "base.html" %}
+
+{% block content %}
+
+    <script type="text/javascript">
+        {{ code | safe }}
+    </script>
+
+{% endblock %}
