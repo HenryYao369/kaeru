@@ -41,3 +41,35 @@ textarea{
 #output-site{
 	height:60%;
 }
+
+#max-directory-button{
+    transform-origin:left top 0;
+	-ms-transform:rotate(90deg) translateY(-100%);
+  	-moz-transform:rotate(90deg) translateY(-100%);
+  	-webkit-transform:rotate(90deg) translateY(-100%);
+  	-o-transform:rotate(90deg) translateY(-100%);
+}
+
+#dir-max-buttons{
+    transform-origin:right bottom 0;
+	-ms-transform:rotate(270deg) translateY(125%);
+  	-moz-transform:rotate(270deg) translateY(125%);
+  	-webkit-transform:rotate(270deg) translateY(125%);
+  	-o-transform:rotate(270deg) translateY(125%);
+}
+
+#output-max-buttons{
+	transform-origin:left top 0;
+	-ms-transform:rotate(90deg) translateY(-100%);
+  	-moz-transform:rotate(90deg) translateY(-100%);
+  	-webkit-transform:rotate(90deg) translateY(-100%);
+  	-o-transform:rotate(90deg) translateY(-100%);
+}
+
+#max-output-button2{
+	transform-origin:right bottom 0;
+	-ms-transform:rotate(270deg) translateY(125%);
+  	-moz-transform:rotate(270deg) translateY(125%);
+  	-webkit-transform:rotate(270deg) translateY(125%);
+  	-o-transform:rotate(270deg) translateY(125%);
+}
