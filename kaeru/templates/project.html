@@ -1,3 +1,4 @@
+<!-- This template is for listing the details of a project -->
 {% extends "base.html" %}
 
 {% block content %}
@@ -13,7 +14,7 @@
         <p><a href="/projects/{{ contributor }}/">{{ contributor }}</a></p> 
         <form action="/projects/{{ username }}/{{ projectname }}/" method="post">
             {% csrf_token %}
-            <input type="hidden" name="operation" value="rmcontributor"> <!-- TODO: Change this at some point -->
+            <input type="hidden" name="operation" value="rm_contributor"> <!-- TODO: Change this at some point -->
             <input type="hidden" name="contributorname" value="{{ contributor }}"> <!-- TODO: Change this at some point -->
             <input type="submit" value="Delete" />
         </form>
@@ -27,16 +28,67 @@
         <p>Contributor Name:
             <input type="text" name="contributorname" value="" placeholder="name" required>
         </p>
-        <input type="hidden" name="operation" value="addcontributor"> <!-- TODO: Change this at some point -->
+        <input type="hidden" name="operation" value="add_contributor"> <!-- TODO: Change this at some point -->
         <input type="submit" value="Submit" />
     </form>
+    <br>
+
+    {% endif %}
+
+    {% if iscontributor %}
+
+    <!-- Listing pages -->
+    <h4>Pages</h4>
+
+    {% for page in pages %}
+        <p><a href="/projects/{{ username }}/{{ projectname }}/{{ page }}/">{{ page }}</a></p> 
+        <form action="/projects/{{ username }}/{{ projectname }}/" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="operation" value="rm_page"> <!-- TODO: Change this at some point -->
+            <input type="hidden" name="pagename" value="{{ page }}"> <!-- TODO: Change this at some point -->
+            <input type="submit" value="Delete" />
+        </form>
+    {% endfor %}
+
+    <!-- Adding contributors -->
+    <h4>Add Page</h4>
+    
+    <form action="/projects/{{ username }}/{{ projectname }}/" method="post">
+        {% csrf_token %}
+        <p>Page Name:
+            <input type="text" name="pagename" value="" placeholder="name" required>
+        </p>
+        <input type="hidden" name="operation" value="add_page"> <!-- TODO: Change this at some point -->
+        <input type="submit" value="Submit" />
+    </form>
+    <br>
+
+    {% endif %}
+
+    {% if iscreator %}
+
+    <!-- Changing project visibility -->
+    <h4>Project Visibility</h4>
+    <form action="/projects/{{ username }}/{{ projectname }}/" method="post">
+        {% csrf_token %}
+        {% if hidden %}
+        <input type="hidden" name="operation" value="publicize"> <!-- TODO: Change this at some point -->
+        <input type="hidden" name="projectname" value="{{ projectname }}"> <!-- TODO: Change this at some point -->
+        <input type="submit" value="Make Public" />
+        {% else %}
+        <input type="hidden" name="operation" value="privatize"> <!-- TODO: Change this at some point -->
+        <input type="hidden" name="projectname" value="{{ projectname }}"> <!-- TODO: Change this at some point -->
+        <input type="submit" value="Make Private" />
+        {% endif %}
+    </form>
+
     <br>
 
     <!-- Deleting the project -->
     <h4>Delete Project</h4>
     <form action="/projects/{{ username }}/" method="post">
         {% csrf_token %}
-        <input type="hidden" name="operation" value="delete"> <!-- TODO: Change this at some point -->
+        <input type="hidden" name="operation" value="rm"> <!-- TODO: Change this at some point -->
         <input type="hidden" name="projectname" value="{{ projectname }}"> <!-- TODO: Change this at some point -->
         <input type="submit" value="Delete" />
     </form>

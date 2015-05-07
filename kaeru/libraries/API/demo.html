@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<script type="text/javascript" src="library.js"></script>
+</HEAD>
+<Body>
+<SCRIPT>
+var mypage = new Page(1280,720, "demo page");
+var myform = new Section(1280,720, true);
+mypage.appendSection(myform);
+var button = new ButtonObject(300,400,"Click me!");
+button.setOnClick(function(){
+	button.getInnerText().setText("I can be a toolbar");
+	return false;
+});
+button.setAnchors(true,false,true,true);
+myform.appendElement(button, ADD_CORNER, 0, 200);
+var textfield = new TextFieldObject(500,400,"This can be the IDE");
+textfield.setAnchors(true,true,true,true);
+myform.appendElement(textfield, ADD_CORNER, 300,200);
+var radio = new RadioObject(100,100,"coolradio", 3, "vertical");
+radio.configureOption(0, "cool", "Option1");
+radio.configureOption(1, "not cool", "Option2");
+radio.configureOption(2, "very not cool", "Option3");
+radio.setAnchors(true,true,false,false);
+myform.appendElement(radio, ADD_CORNER, 1000,100);
+var paragraph = new ParagraphObject(400,100);
+var text1 = new TextObject("hello world, ");
+var text2 = new TextObject(", goodbye world");
+var link = new HyperLinkObject("im a link", "http://www.cornell.edu");
+paragraph.addText(text1);
+paragraph.addText(link);
+paragraph.addText(text2);
+paragraph.setAnchors(true,false,false,true);
+myform.appendElement(paragraph, ADD_CORNER, 10, 10);
+var button2 = new ButtonObject(100,100,"Click me!");
+button2.setOnClick(function(){
+	button2.getInnerText().setText("Anchored Bottom Corner");
+	return false;
+});
+button2.setAnchors(false,true,true,false);
+myform.appendElement(button2, ADD_CORNER, 1100, 500);
+myform.addSubmit();
+
+</SCRIPT>
+</Body>
+</HTML>

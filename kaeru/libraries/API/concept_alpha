@@ -1,0 +1,623 @@
+class Integer {
+
+#returns Integer
+Compare(Integer)
+
+#returns String
+ToString()
+
+#returns Float
+ToFloat()
+
+#returns Integer
+MAX_VALUE: Returns the largest number possible 
+
+#returns Integer
+MIN_VALUE: Returns the smallest number possible
+}
+
+class Float {
+
+#returns Integer
+Compare(Float)
+
+#returns String
+ToString()
+
+#returns Integer
+ToInteger()
+
+#returns Float
+MAX_VALUE: Returns the largest number possible 
+
+#returns Float
+MIN_VALUE: Returns the smallest number possible
+}
+
+class Character {
+
+#returns Integer
+Value()
+
+#returns String
+toString()
+
+#returns Character
+FromCharCode(Integer): Converts Unicode values to characters
+}
+class String {
+#returns Integer
+Length(): Returns the length of the string
+
+#returns Character
+CharAt(Integer): Returns the character at the specified index (position)
+
+#returns Integer
+CharCodeAt(Integer): Returns the Unicode of the character at the specified index
+
+#returns String
+Concat(String): Joins two strings, and returns a new joined strings
+
+#returns Integer
+IndexOf(Character): Returns the position of the first found occurrence of a specified value in a string
+
+#returns Integer
+LastIndexOf(Character): Returns the position of the last found occurrence of a specified value in a string
+
+#returns String[]
+Match(RegExp): Searches a string for a match against a regular expression, and returns the matches
+
+#returns String
+Replace(RegExp): Searches a string for a specified value, or a regular expression, and returns a new string where the specified values are replaced
+
+#returns Integer
+Search(RegExp): Searches a string for a specified value, or regular expression, and returns the position of the match
+
+#returns String[]
+Split(RegExp): Splits a string into an array of substrings
+
+#returns String
+Substring(Integer,Integer): Extracts the characters from a string, between two specified indices
+
+#returns String
+ToLowerCase(): Converts a string to lowercase letters
+
+#returns String
+ToString(): Returns the value of a String object
+
+#returns String
+ToUpperCase(): Converts a string to uppercase letters
+
+#returns String
+Trim():Removes whitespace from both ends of a string
+}
+
+class Math {
+// static definitions
+#return Float (all of them)
+E: Returns Euler's number (approx. 2.718)
+LN2: Returns the natural logarithm of 2 (approx. 0.693)
+LN10: Returns the natural logarithm of 10 (approx. 2.302)
+LOG2E: Returns the base-2 logarithm of E (approx. 1.442)
+LOG10E: Returns the base-10 logarithm of E (approx. 0.434)
+PI: Returns PI (approx. 3.14)
+SQRT1_2: Returns the square root of 1/2 (approx. 0.707)
+SQRT2: Returns the square root of 2 (approx. 1.414)
+// end definitions
+
+# return Float (all of them), take in either Float or Integer (can be expressed as a generic)
+Abs(x): Returns the absolute value of x
+Acos(x): Returns the arccosine of x, in radians
+Asin(x): Returns the arcsine of x, in radians
+Atan(x): Returns the arctangent of x as a numeric value between -PI/2 and PI/2 radians
+Atan2(y,x): Returns the arctangent of the quotient of its arguments
+Cos(x): Returns the cosine of x (x is in radians)
+Exp(x): Returns the value of Exponential
+Log(x): Returns the natural logarithm (base E) of x
+Max(x,y,z,...,n): Returns the number with the highest value
+Min(x,y,z,...,n): Returns the number with the lowest value
+Pow(x,y): Returns the value of x to the power of y
+Random(): Returns a random number between 0 and 1
+Sin(x): Returns the sine of x (x is in radians)
+Sqrt(x): Returns the square root of x
+Tan(x): Returns the tangent of an angle
+
+# return Integer (all of them), take in either Float or Integer (can be expressed as a generic)
+Ceil(x): Returns x, rounded upwards to the nearest integer
+Floor(x): Returns x, rounded downwards to the nearest integer
+Round(x): Rounds x to the nearest integer
+}
+
+// class Date research TODO
+
+Interface Collection {
+
+#return Boolean
+Add(T)
+
+#return Boolean
+AddAll(Collection<T>)
+
+#return void
+Clear()
+
+#return Boolean
+Contains(T)
+
+#return Boolean
+IsEmpty()
+
+#return Boolean
+RemoveAll(T)
+
+#return Integer
+Size()
+
+#return Boolean
+RetainAll(T)
+}
+
+class List implements Collection {
+
+// include all methods from interfaces
+
+#return T
+Get(Integer)
+
+#return void
+Set(Integer, T)
+
+#return Integer
+IndexOf(T)
+
+#return Integer
+LastIndexOf(T)
+
+#return void
+Reverse()
+
+#return void
+Remove(Integer)
+
+#return List<T>
+SubList(Integer,Integer)
+}
+
+class Queue implements Collection {
+
+// include all methods from interfaces
+
+#return T
+Poll()
+
+#return T
+Peek()
+}
+
+class Stack implements Collection {
+
+// include all methods from interfaces
+
+#return T
+Pop()
+
+#return T
+Peek()
+}
+
+class Set implements Collection {
+
+// include all methods from interfaces
+
+#return Boolean
+ContainsAll(Collection<T>)
+}
+
+class RegExp {
+
+// TODO what goes here besides constructor since we're not using JavaScript RegExp
+
+Constructor(String)
+}
+
+class DOMNode {
+// TODO represents a DOM Node
+}
+
+// not sure what of DOM we need and what we don't
+class DOMDocument {
+
+#return DOMElement
+document.activeElement  Returns the currently focused element in the document
+
+#return void
+document.addEventListener(Funct<T1,...,TN,R>): Attaches an event handler to the document
+
+#return DOMNode
+document.adoptNode(DOMNode): Adopts a node from another document
+
+#return Collection<DOMElement>
+document.anchors: Returns a collection of all <a> elements in the document that have a name attribute
+
+#return Collection<DOMElement>
+document.applets: Returns a collection of all <applet> elements in the document
+
+#return String
+document.baseURI: Returns the absolute base URI of a document
+
+#return DOMNode
+document.body: Sets or returns the document's body (the <body> element)
+
+#return void
+document.close(): Closes the output stream previously opened with document.open()
+
+#return Collection<T>
+document.cookie: Returns all name/value pairs of cookies in the document
+
+#return DOMNode
+document.createAttribute(): Creates an attribute node
+
+#return DOMNode
+document.createComment(): Creates a Comment node with the specified text
+
+#return DOMNode
+document.createDocumentFragment(): Creates an empty DocumentFragment node
+
+#return DOMElement
+document.createElement(): Creates an Element node
+
+#return DOMNode
+document.createTextNode(): Creates a Text node
+
+#return String
+document.doctype: Returns the Document Type Declaration associated with the document
+
+#return DOMElement
+document.documentElement: Returns the Document Element of the document (the <html> element)
+
+#return String
+document.documentMode: Returns the mode used by the browser to render the document
+
+#return String
+document.documentURI: Sets or returns the location of the document
+
+#return String
+document.domain: Returns the domain name of the server that loaded the document
+
+#return Collection<DOMElement>
+document.embeds: Returns a collection of all <embed> elements the document
+
+#return Collection<DOMElement>
+document.forms: Returns a collection of all <form> elements in the document
+
+#return DOMElement
+document.getElementById(String): Returns the element that has the ID attribute with the specified value
+
+#return Collection<DOMElement>
+document.getElementsByClassName(String): Returns a NodeList containing all elements with the specified class name
+
+#return Collection<DOMElement>
+document.getElementsByName(): Returns a NodeList containing all elements with a specified name
+
+#return Collection<DOMElement>
+document.getElementsByTagName(): Returns a NodeList containing all elements with the specified tag name
+
+#return Boolean
+document.hasFocus(): Returns a Boolean value indicating whether the document has focus
+
+#return DOMElement
+document.head   Returns the <head> element of the document
+
+#return Collection<DOMElement>
+document.images Returns a collection of all <img> elements in the document
+
+#return DOMNode
+document.importNode(): Imports a node from another document
+
+#return String
+document.inputEncoding  Returns the encoding, character set, used for the document
+
+#return String
+document.lastModified   Returns the date and time the document was last modified
+
+#return Collection<DOMElement>
+document.links  Returns a collection of all <a> and <area> elements in the document that have a href attribute
+
+#return void
+document.normalize(): Removes empty Text nodes, and joins adjacent nodes
+
+#return void
+document.normalizeDocument(): Removes empty Text nodes, and joins adjacent nodes
+
+#return void
+document.open(String): Opens an HTML output stream to collect output from document.write()
+
+#return DOMElement
+document.querySelector(String): Returns the first element that matches a specified CSS selector(s) in the document
+
+#return Collection<DOMElement>
+document.querySelectorAll(String): Returns a static NodeList containing all elements that matches a specified CSS selector(s) in the document
+
+#return String
+document.readyState Returns the (loading) status of the document
+
+#return String
+document.referrer   Returns the URL of the document that loaded the current document
+
+#return void
+document.removeEventListener(): Removes an event handler from the document (that has been attached with the addEventListener() method)
+
+#return void
+document.renameNode(String): Renames the specified node
+
+#return Collection<DOMElement>
+document.scripts    Returns a collection of <script> elements in the document
+
+#return Boolean
+document.strictErrorChecking    Sets or returns whether error-checking is enforced or not
+
+#return String
+document.title  Sets or returns the title of the document
+
+#return String
+document.URL    Returns the full URL of the HTML document
+
+#return void
+document.write(function<T1,...,TN,R>): Writes HTML expressions or JavaScript code to a document
+
+#return void
+document.writeln(function<T1,...,TN,R>): Same as write(), but adds a newline character after each statement
+}
+
+class DOMElement {
+
+#return String
+element.accessKey:  Sets or returns the accesskey attribute of an element
+
+#return void
+element.addEventListener(funct<T1,...,TN,R>):   Attaches an event handler to the specified element
+
+#return void
+element.appendChild(DOMNode):   Adds a new child node, to an element, as the last child node
+
+#return Collection<T>
+element.attributes:     Returns a NamedNodeMap of an element's attributes
+
+#return void
+element.blur():     Removes focus from an element
+
+#return Integer
+element.childElementCount:  Returns the number of child elements an element has
+
+#return Collection<DOMNode>
+element.childNodes:     Returns a collection of an element's child nodes (including text and comment nodes)
+
+#return Collection<DOMNode>
+element.children:   Returns a collection of an element's child element (excluding text and comment nodes)
+
+#return Collection<String>
+element.classList:  Returns the class name(s) of an element
+
+#return String
+element.className:  Sets or returns the value of the class attribute of an element
+
+#return void
+element.click(): Simulates a mouse-click on an element
+
+#return Integer
+element.clientHeight: Returns the height of an element, including padding
+
+#return Integer
+element.clientLeft: Returns the width of the left border of an element
+
+#return Integer
+element.clientTop: Returns the width of the top border of an element
+
+#return Integer
+element.clientWidth: Returns the width of an element, including padding
+
+#return DOMElement
+element.cloneNode(): Clones an element
+
+#return Integer
+element.compareDocumentPosition(): Compares the document position of two elements
+
+#return Boolean
+element.contains(): Returns true if a node is a descendant of a node, othwerwise false
+
+#return Boolean
+element.contentEditable: Sets or returns whether the content of an element is editable or not
+
+#return String
+element.dir: Sets or returns the value of the dir attribute of an element
+
+#return DOMNode
+element.firstChild: Returns the first child node of an element
+
+#return DOMNode
+element.firstElementChild: Returns the first child element of an element
+
+#return void
+element.focus(): Gives focus to an element
+
+#return String
+element.getAttribute(): Returns the specified attribute value of an element node
+
+#return DOMNode
+element.getAttributeNode(): Returns the specified attribute node
+
+#return Collection<DOMNode>
+element.getElementsByClassName(String): Returns a collection of all child elements with the specified class name
+
+#return Collection<DOMNode>
+element.getElementsByTagName(String): Returns a collection of all child elements with the specified tag name
+
+#return Object
+element.getFeature(): Returns an object which implements the APIs of a specified feature
+
+#return Boolean
+element.hasAttribute(String): Returns true if an element has the specified attribute, otherwise false
+
+#return Boolean
+element.hasAttributes(): Returns true if an element has any attributes, otherwise false
+
+#return Boolean
+element.hasChildNodes(): Returns true if an element has any child nodes, otherwise false
+
+#return String
+element.id: Sets or returns the value of the id attribute of an element
+
+#return String
+element.innerHTML: Sets or returns the content of an element
+
+#return void
+element.insertBefore(DOMNode): Inserts a new child node before a specified, existing, child node
+
+#return Boolean
+element.isContentEditable: Returns true if the content of an element is editable, otherwise false
+
+#return Boolean
+element.isDefaultNamespace(String): Returns true if a specified namespaceURI is the default, otherwise false
+
+#return Integer
+element.isEqualNode(DOMElement): Checks if two elements are equal
+
+#return Integer
+element.isSameNode(DOMElement): Checks if two elements are the same node
+
+#return Boolean
+element.isSupported(String): Returns true if a specified feature is supported on the element
+
+#return String
+element.lang: Sets or returns the value of the lang attribute of an element
+
+#return DOMNode
+element.lastChild: Returns the last child node of an element
+
+#return DOMElement
+element.lastElementChild: Returns the last child element of an element
+
+#return String
+element.namespaceURI: Returns the namespace URI of an element
+
+#return DOMNode
+element.nextSibling: Returns the next node at the same node tree level
+
+#return DOMElement
+element.nextElementSibling: Returns the next element at the same node tree level
+
+#return String
+element.nodeName: Returns the name of a node
+
+#return String
+element.nodeType: Returns the node type of a node
+
+#return String
+element.nodeValue: Sets or returns the value of a node
+
+#return void
+element.normalize(): Joins adjacent text nodes and removes empty text nodes in an element
+
+#return Integer
+element.offsetHeight: Returns the height of an element, including padding, border and scrollbar
+
+#return Integer
+element.offsetWidth: Returns the width of an element, including padding, border and scrollbar
+
+#return Integer
+element.offsetLeft: Returns the horizontal offset position of an element
+
+#return Integer
+element.offsetTop: Returns the vertical offset position of an element
+
+#return DOMNode
+element.ownerDocument: Returns the root element (document object) for an element
+
+#return DOMNode
+element.parentNode: Returns the parent node of an element
+
+#return DOMElement
+element.parentElement: Returns the parent element node of an element
+
+#return DOMNode
+element.previousSibling: Returns the previous node at the same node tree level
+
+#return DOMElement
+element.previousElementSibling: Returns the previous element at the same node tree level
+
+#return DOMElement
+element.querySelector(String): Returns the first child element that matches a specified CSS selector(s) of an element
+
+#return Collection<DOMElement>
+element.querySelectorAll(String): Returns all child elements that matches a specified CSS selector(s) of an element
+
+#return void
+element.removeAttribute(String): Removes a specified attribute from an element
+
+#return DOMNode
+element.removeAttributeNode(DOMNode): Removes a specified attribute node, and returns the removed node
+
+#return DOMNode
+element.removeChild(DOMNode): Removes a child node from an element
+
+#return DOMNode
+element.replaceChild(DOMNode): Replaces a child node in an element
+
+#return void
+element.removeEventListener(funct<T1,...,TN,R>): Removes an event handler that has been attached with the addEventListener() method
+
+#return Integer
+element.scrollHeight: Returns the entire height of an element, including padding
+
+#return Integer
+element.scrollLeft: Sets or returns the number of pixels an element's content is scrolled horizontally
+
+#return Integer
+element.scrollTop: Sets or returns the number of pixels an element's content is scrolled vertically
+
+#return Integer
+element.scrollWidth: Returns the entire width of an element, including padding
+
+#return void
+element.setAttribute(String): Sets or changes the specified attribute, to the specified value
+
+#return void
+element.setAttributeNode(DOMNode): Sets or changes the specified attribute node
+
+#return String
+element.style: Sets or returns the value of the style attribute of an element
+
+#return String
+element.tabIndex: Sets or returns the value of the tabindex attribute of an element
+
+#return String
+element.tagName: Returns the tag name of an element
+
+#return String
+element.textContent: Sets or returns the textual content of a node and its descendants
+
+#return String
+element.title: Sets or returns the value of the title attribute of an element
+
+#return String
+element.toString(DOMElement): Converts an element to a string
+}
+
+class DOMEvent {
+// not listing them explicitly
+// These will most likely all return void and take in a funct
+
+Mouse Events
+Keyboard Events
+Frame/Object Events
+Form Events
+Drag Events
+Clipboard Events
+Print Events
+Media Events
+Animation Events
+Transition Events
+Server-Sent Events
+Misc Events
+Touch Events
+}

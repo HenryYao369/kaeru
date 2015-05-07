@@ -1,3 +1,4 @@
+<!-- This template is for the user listing of projects -->
 {% extends "base.html" %}
 
 {% block content %}
@@ -9,6 +10,12 @@
 
     {% for project in projects %}
         <p> <a href="/projects/{{ username }}/{{ project }}/">{{ project }}</a> </p>
+    {% endfor %}
+
+    <h2>Contributions</h2>
+
+    {% for project in contributions %}
+        <p> <a href="/projects/{{ project.creator }}/{{ project }}/">{{ project }}</a> </p>
     {% endfor %}
 
     {% if isuser %}
