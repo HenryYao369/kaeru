@@ -151,6 +151,10 @@ def index_view(request):
         # Show the sign up page
         return render_to_response(url, cookie)
 
+# TODO: Code that changes this view when you're logged in or not
+def ide_view(request):
+    return render_to_response('ide.html', {})
+
 def signup_view(request):
     cookie = _get_csrf_cookie(request)
     url = 'signup.html'
