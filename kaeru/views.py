@@ -288,24 +288,24 @@ def change_user_data(request):
     template = {}
     form = change_user_data_Form()
     if request.method=="POST":
-        form = change_user_data_Form(request.POST.copy())
+        # form = change_user_data_Form(request.POST.copy())
 
-        if form.is_valid():
-            owner = request.user
-            username = owner.username
-            new_first_name = form.cleaned_data["new_first_name"]
-            new_last_name = form.cleaned_data["new_last_name"]
-            new_email = form.cleaned_data["new_email"]
+        # if form.is_valid():
+        owner = request.user
+        username = owner.username
+        new_first_name = request.POST.get("new_first_name") #form.cleaned_data["new_first_name"]
+        new_last_name = request.POST.get("new_last_name")# form.cleaned_data["new_last_name"]
+        new_email = request.POST.get("new_email")#form.cleaned_data["new_email"]
 
 
-            owner.first_name = new_first_name
-            owner.last_name = new_last_name
-            owner.email = new_email
+        owner.first_name = new_first_name
+        owner.last_name = new_last_name
+        owner.email = new_email
 
-            owner.save()
-            cookie['user'] = owner
+        owner.save()
+        cookie['user'] = owner
 
-            return HttpResponseRedirect(reverse("kaeru.views.change_user_data_ok"))
+        return HttpResponseRedirect(reverse("kaeru.views.change_user_data_ok"))
         # note: after editing one's data, (s)he is logged out. One must log in to see the changes again!
 
     template["form"] = form

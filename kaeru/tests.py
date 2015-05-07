@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from kaeru.models import Project
 from kaeru.models import Code
 from kaeru.models import Page
+from django.test import Client
+from django.contrib.auth.hashers import make_password
+
 
 class LoginTest(TestCase):
 
@@ -44,9 +47,89 @@ class LoginTest(TestCase):
                                                 'password': user.password})
         self.assertEqual(200, response.status_code)
 
+class UserPasswordChangeTest(TestCase):
 
-# class UserDataTest(TestCase):
-#     def test_
+    def test_user_pwd1(self):
+        c = Client()
+
+        response = self.client.post('/signup/', {'username': 'username',
+                                                'password': 'old_pwd',
+                                                'email': 'old@email.com',
+                                                'first_name': 'old_first_name2',
+                                                'last_name': 'old_last_name'})
+        self.assertEqual(200, response.status_code)
+
+        c.login(username='username', password='old_pwd')
+
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd',
+                                                   'newpassword': 'new_pwd',
+                                                   'newpassword1': 'new_pwd'})
+        self.assertEqual(302, response.status_code)
+
+        user = User.objects.get(username='username')
+        self.assertEqual(True,user.check_password("new_pwd"))
+
+
+class UserDataTest(TestCase):
+
+    def test_user_data1(self):
+        c = Client()
+
+        response = self.client.post('/signup/', {'username': 'username',
+                                                'password': 'old_pwd',
+                                                'email': 'old@email.com',
+                                                'first_name': 'old_first_name2',
+                                                'last_name': 'old_last_name'})
+        self.assertEqual(200, response.status_code)
+
+        c.login(username='username', password='old_pwd')
+
+        response=c.post('/change_user_data/', {'new_first_name': 'newFN',
+                                                   'new_last_name': 'newLN',
+                                                   'new_email': 'new@email.com'})
+        user = User.objects.get(username='username')
+        self.assertEqual(302, response.status_code)
+
+        self.assertEqual("newFN",user.first_name)
+        self.assertEqual("newLN",user.last_name)
+        self.assertEqual("new@email.com",user.email)
+
+
+    def test_user_data(self):
+        # Initial account setup and signing
+        response = self.client.post('/signup/', {'username': 'username',
+                                                'password': 'old_pwd',
+                                                'email': 'old@email.com',
+                                                'first_name': 'old_first_name',
+                                                'last_name': 'old_last_name'})
+        self.assertEqual(200, response.status_code)
+
+        # user = User.objects.get(username='old_username')
+
+        response = self.client.post('/login/', {'username': 'old_username',
+                                                'password': 'old_pwd'})
+        self.assertEqual(200, response.status_code)
+
+
+        response = self.client.post('/change_user_data/', {'new_first_name': 'newFN',
+                                                   'new_last_name': 'newLN',
+                                                   'new_email': 'new@email.com'})
+        self.assertEqual(302, response.status_code) # Since we use Redirect here, it is 302 not 200.
+
+
+        response = self.client.get('/change_user_data_ok/')
+        self.assertEqual(200, response.status_code)
+
+
+        self.client.logout()
+        self.client.login(username='username', password='old_pwd')
+
+        user = User.objects.get(username='username')
+        self.assertEqual("newFN",user.first_name)
+        self.assertEqual("newLN",user.last_name)
+        self.assertEqual("new@email.com",user.email)
+
+
 
 
 
