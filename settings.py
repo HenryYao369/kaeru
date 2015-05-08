@@ -149,6 +149,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     '/var/www/kaeru-lang.org/kaeru/templates',
+
 )
 
 INSTALLED_APPS = (
