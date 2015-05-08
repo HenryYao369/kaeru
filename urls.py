@@ -17,13 +17,32 @@ urlpatterns = patterns('',
     url(r'^signup/$' , 'kaeru.views.signup_view'),
     url(r'^pages/(?P<url_username>([A-Za-z])\w+)/(?P<url_projectname>([A-Za-z])\w+)/(?P<url_pagename>([A-Za-z])\w+)/$' , 'kaeru.views.pages_view'), 
     url(r'^people/$' , 'kaeru.views.people_view'),
+
+
+
     url(r'^ide/$' , 'kaeru.views.ide_view'),
+
     url(r'^projects/$' , 'kaeru.views.projects_view'), 
-    url(r'^projects/$' , 'kaeru.views.projects_view'), 
+
+    url(r'^tutorial/$' , 'kaeru.views.tutorial_view'),
+
     url(r'^projects/(?P<url_username>([A-Za-z])\w+)/$' , 'kaeru.views.projects_view'), 
     url(r'^projects/(?P<url_username>([A-Za-z])\w+)/(?P<url_projectname>([A-Za-z])\w+)/$' , 'kaeru.views.projects_view'), 
     url(r'^projects/(?P<url_username>([A-Za-z])\w+)/(?P<url_projectname>([A-Za-z])\w+)/(?P<url_pagename>([A-Za-z])\w+)/$' , 'kaeru.views.projects_view'),
+
 	url(r'^codes/$' , 'kaeru.views.codes_view'), 
+
+	url(r'^codes_submit/$' , 'kaeru.views.codes_submit_view'), 
+
+    url(r'^change_password/$', 'kaeru.views.change_password'),
+    url(r'^change_password_ok/$', 'kaeru.views.change_password_ok'),
+
+    url(r'^change_user_data/$', 'kaeru.views.change_user_data'),
+    url(r'^change_user_data_ok/$', 'kaeru.views.change_user_data_ok'),
+
+
+
 	url(r'^codes_submit/$' , 'kaeru.views.codes_submit_view'),
     url(r'datadesigner/$' , 'kaeru.datadesigner.test'),
+
 )

@@ -10,7 +10,7 @@
     <h1>Log in to Kaeru</h1>
     
         {% if error_message %}
-            <p><strong>{{ error_message }}</strong></p>
+            <p style="color:red;font-size:20px"><strong>{{ error_message }}</strong></p>
         {% endif %}
     
         <form action="/login/" method="post">
