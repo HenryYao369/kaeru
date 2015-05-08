@@ -10,16 +10,32 @@ from django.contrib.auth.hashers import make_password
 
 class AdminTest(LiveServerTestCase):
     def test_login(self):
+        my_admin = User.objects.create_superuser('admin', 'myemail@test.com', 'admin_pwd')
         c = Client()
 
         response = c.get('/admin/')
+        c.logout()
         self.assertEquals(response.status_code,302)
         # self.assertTrue('Log in' in response.content)
 
-        c.login(username = 'username',password='password')
+        c.login(username = 'admin',password='admin_pwd')
         response = c.get('/admin/')
-        self.assertEquals(response.status_code,302)
-        # self.assertTrue('Log out' in response.content)
+        self.assertEquals(response.status_code,200)
+        self.assertTrue('Log out' in response.content)
+
+
+    def test_login2(self):
+        password = 'mypassword'
+
+        my_admin = User.objects.create_superuser('myadmin', 'myemail@test.com', password)
+
+        c = Client()
+
+        # You'll need to log him in before you can send requests through the client
+        response = c.login(username=my_admin.username, password=password)
+        self.assertTrue(response)
+        self.assertTrue(my_admin.is_staff)
+
 
 class LoginTest(TestCase):
 
@@ -60,14 +76,21 @@ class LoginTest(TestCase):
                                                 'password': user.password})
         self.assertEqual(200, response.status_code)
 
-    def xx(self):
+    def test_login_admin(self):
         '''
-        there should be a admin site login test!
+        A admin site login test
         :return:
         '''
+        user = User.objects.get()
+        response = self.client.post('/admin/', {'username': user.username,
+                                                'password': user.password})
+        self.assertEqual(302, response.status_code)
+        self.assertFalse(user.is_staff)
 
 
 class UserPasswordChangeTest(TestCase):
+
+
 
     def test_user_pwd1(self):
         c = Client()
@@ -92,6 +115,32 @@ class UserPasswordChangeTest(TestCase):
 
 class UserDataTest(TestCase):
 
+    def test_user_data_change(self):
+        response = self.client.post('/signup/', {'username': 'someday',
+                                                'password': 'past',
+                                                'email': 'old@past.com',
+                                                'first_name': 'past_FN',
+                                                'last_name': 'past_FN'})
+        self.assertEqual(200, response.status_code)
+
+        response = self.client.post('/login/', {'username': 'username',
+                                                'password': 'old_pwd'})
+        self.assertEqual(200, response.status_code)
+
+        response=self.client.post('/change_user_data/', {'new_first_name': 'futureFN',
+                                                   'new_last_name': 'futureLN',
+                                                   'new_email': 'future@email.com'})
+        self.assertEqual(302, response.status_code)
+
+        response = self.client.get('/change_user_data_ok/')
+        self.assertEqual(200, response.status_code)
+
+        user = User.objects.get(username='someday')
+        self.assertEqual("futureFN",user.first_name)
+        self.assertEqual("futureLN",user.last_name)
+        self.assertEqual("future@email.com",user.email)
+
+
     def test_user_data1(self):
         c = Client()
 
@@ -102,13 +151,16 @@ class UserDataTest(TestCase):
                                                 'last_name': 'old_last_name'})
         self.assertEqual(200, response.status_code)
 
+        c.logout()
         c.login(username='username', password='old_pwd')
 
         response=c.post('/change_user_data/', {'new_first_name': 'newFN',
                                                    'new_last_name': 'newLN',
                                                    'new_email': 'new@email.com'})
-        user = User.objects.get(username='username')
         self.assertEqual(302, response.status_code)
+
+        user = User.objects.get(username='username')
+
 
         self.assertEqual("newFN",user.first_name)
         self.assertEqual("newLN",user.last_name)
@@ -124,9 +176,8 @@ class UserDataTest(TestCase):
                                                 'last_name': 'old_last_name'})
         self.assertEqual(200, response.status_code)
 
-        # user = User.objects.get(username='old_username')
-
-        response = self.client.post('/login/', {'username': 'old_username',
+        self.client.logout()
+        response = self.client.post('/login/', {'username': 'username',
                                                 'password': 'old_pwd'})
         self.assertEqual(200, response.status_code)
 
