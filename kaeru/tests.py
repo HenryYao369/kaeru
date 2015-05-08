@@ -199,7 +199,7 @@ class UrlsTest(TestCase):
         Check that change_password page exists
         """
         response = self.client.get('/change_password/')  # 302? 200?
-        self.assertEqual(302,response.status_code)
+        self.assertEqual(200,response.status_code)
 
 
     def test_ide_exists(self):
