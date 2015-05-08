@@ -24,7 +24,7 @@ urlpatterns = patterns('',
 
     url(r'^projects/$' , 'kaeru.views.projects_view'), 
 
-    # url(r'^tutorial/$' , 'kaeru.views.tutorial_view'),    # comment out this line to enable admin site.
+    url(r'^tutorial/$' , 'kaeru.views.tutorial_view'),
 
     url(r'^projects/(?P<url_username>([A-Za-z])\w+)/$' , 'kaeru.views.projects_view'), 
     url(r'^projects/(?P<url_username>([A-Za-z])\w+)/(?P<url_projectname>([A-Za-z])\w+)/$' , 'kaeru.views.projects_view'), 

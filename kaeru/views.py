@@ -333,6 +333,9 @@ def change_user_data_ok(request):
     return render_to_response("changeUserDataOK.html")
 
 
+def tutorial_view(request):
+    return render_to_response("tutorial.html")
+
 
 # The projects view is for user-based administrative management.
 # Specifically, it allows them to do the following: 

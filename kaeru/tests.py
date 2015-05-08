@@ -4,9 +4,22 @@ from django.contrib.auth.models import User
 from kaeru.models import Project
 from kaeru.models import Code
 from kaeru.models import Page
-from django.test import Client
+from django.test import Client, LiveServerTestCase
 from django.contrib.auth.hashers import make_password
 
+
+class AdminTest(LiveServerTestCase):
+    def test_login(self):
+        c = Client()
+
+        response = c.get('/admin/')
+        self.assertEquals(response.status_code,302)
+        # self.assertTrue('Log in' in response.content)
+
+        c.login(username = 'username',password='password')
+        response = c.get('/admin/')
+        self.assertEquals(response.status_code,302)
+        # self.assertTrue('Log out' in response.content)
 
 class LoginTest(TestCase):
 
