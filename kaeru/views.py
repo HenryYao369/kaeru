@@ -138,7 +138,7 @@ def index_view(request):
         # Create the account
         raw_username = request.POST.get('username', None)
         raw_password = request.POST.get('password', None)
-        user, is_new = auth.models.User.objects.get_or_create(
+        new_user, is_new = auth.models.User.objects.get_or_create(
                    username   = raw_username,
                    email      = request.POST.get('email', None),
                    first_name = request.POST.get('first_name', None),
@@ -146,11 +146,24 @@ def index_view(request):
             )
         if is_new:
             # Just made a new user. Welcome aboard!
-            user.set_password(raw_password)
-            user.groups.add(auth.models.Group.objects.get(name="KaeruUsers"))
-            user.save()
+            new_user.set_password(raw_password)
+
+            # user.groups.add(auth.models.Group.objects.get(name="KaeruUsers"))
+
+            '''To create new Group. '''
+            my_group, is_created = DjangoGroup.objects.get_or_create(name='KaeruUsers')
+            new_user.groups.add(my_group)
+            # mygroup.save()
+
+
+            '''future work: set group permissions'''
+            # my_group.permissions = [permission_list]
+
+
+            new_user.save()
             cookie['signup_success'] = True
-            cookie['user'] = user
+            cookie['user'] = new_user
+
             # log in
             auth.login(request, auth.authenticate(username=raw_username, password=raw_password))
             return render_to_response(url, cookie)
