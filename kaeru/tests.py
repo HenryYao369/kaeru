@@ -90,18 +90,17 @@ class LoginTest(TestCase):
 
 class UserPasswordChangeTest(TestCase):
 
-
-
-    def test_user_pwd1(self):
+    def test_user_pwd_basic(self):
         c = Client()
 
         response = self.client.post('/signup/', {'username': 'username',
                                                 'password': 'old_pwd',
                                                 'email': 'old@email.com',
-                                                'first_name': 'old_first_name2',
+                                                'first_name': 'old_first_name',
                                                 'last_name': 'old_last_name'})
         self.assertEqual(200, response.status_code)
 
+        c.logout()
         c.login(username='username', password='old_pwd')
 
         response=c.post('/change_password/', {'oldpassword': 'old_pwd',
@@ -112,8 +111,136 @@ class UserPasswordChangeTest(TestCase):
         user = User.objects.get(username='username')
         self.assertEqual(True,user.check_password("new_pwd"))
 
+    def test_user_pwd2(self):
+        response = self.client.post('/signup/', {'username': 'someday',
+                                                'password': 'past',
+                                                'email': 'old@past.com',
+                                                'first_name': 'past_FN',
+                                                'last_name': 'past_FN'})
+        self.assertEqual(200, response.status_code)
 
-class UserDataTest(TestCase):
+        self.client.logout()
+
+        response = self.client.post('/login/', {'username': 'someday',
+                                                'password': 'wrong_pwd'})
+        self.assertEqual(200, response.status_code)
+
+        response=self.client.post('/change_password/', {'oldpassword': 'old_pwd',
+                                                   'newpassword': 'new_pwd',
+                                                   'newpassword1': 'new_pwd'})
+        self.assertEqual(200, response.status_code)
+        user = User.objects.get(username='someday')
+        self.assertFalse(user.check_password("new_pwd"))
+
+
+        response = self.client.post('/login/', {'username': 'someday',
+                                                'password': 'past'})
+        self.assertEqual(200, response.status_code)
+
+        response=self.client.post('/change_password/', {'oldpassword': 'past',
+                                                   'newpassword': 'new_pwd',
+                                                   'newpassword1': 'new_pwd'})
+        self.assertEqual(302, response.status_code)
+        user = User.objects.get(username='someday')
+        self.assertTrue(user.check_password("new_pwd"))
+
+    def test_user_pwd_corner_cases(self):
+
+        c = Client()
+
+        response = self.client.post('/signup/', {'username': 'username',
+                                                'password': 'old_pwd',
+                                                'email': 'old@email.com',
+                                                'first_name': 'old_first_name',
+                                                'last_name': 'old_last_name'})
+        self.assertEqual(200, response.status_code)
+
+        c.logout()
+        c.login(username='username', password='old_pwd')
+
+        # situation2: old pwd wrong
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd_WRONG',
+                                                   'newpassword': 'new_pwd',
+                                                   'newpassword1': 'new_pwd'})
+        self.assertEqual(200, response.status_code)
+
+        user = User.objects.get(username='username')
+        self.assertFalse(user.check_password("new_pwd"))
+        self.assertTrue(user.check_password("old_pwd"))
+
+        # situation3: new password and confirmation are not equal
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd',
+                                                   'newpassword': 'new_pwd',
+                                                   'newpassword1': 'new_pwd_NOT_EQUAL'})
+        self.assertEqual(200, response.status_code)
+
+        user = User.objects.get(username='username')
+        self.assertFalse(user.check_password("new_pwd"))
+        self.assertFalse(user.check_password("new_pwd_NOT_EQUAL"))
+        self.assertTrue(user.check_password("old_pwd"))
+
+        # situation4: old pwd input wrong, new password and confirmation are not equal
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd_WRONG',
+                                                   'newpassword': 'new_pwd',
+                                                   'newpassword1': 'new_pwd_NOT_EQUAL'})
+        self.assertEqual(200, response.status_code)
+
+        user = User.objects.get(username='username')
+        self.assertFalse(user.check_password("new_pwd"))
+        self.assertFalse(user.check_password("new_pwd_NOT_EQUAL"))
+        self.assertTrue(user.check_password("old_pwd"))
+
+
+
+        # corner case: null input
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd',
+                                                   'newpassword': '',
+                                                   'newpassword1': ''})
+        self.assertEqual(200, response.status_code)
+        user = User.objects.get(username='username')
+        self.assertTrue(user.check_password("old_pwd"))
+
+        # corner case2: null input
+        response=c.post('/change_password/', {'oldpassword': '',
+                                                   'newpassword': '1',
+                                                   'newpassword1': '1'})
+        self.assertEqual(200, response.status_code)
+        user = User.objects.get(username='username')
+        self.assertTrue(user.check_password("old_pwd"))
+
+        # corner case3: null input
+        response=c.post('/change_password/', {'oldpassword': '',
+                                                   'newpassword': '',
+                                                   'newpassword1': ''})
+        self.assertEqual(200, response.status_code)
+        user = User.objects.get(username='username')
+        self.assertTrue(user.check_password("old_pwd"))
+
+        # corner case4: When old password and new password are the same. -- this functionality may be changed later,
+        #  eg. do not let users to use their passwords that have been used once.
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd',
+                                                   'newpassword': 'old_pwd',
+                                                   'newpassword1': 'old_pwd'})
+        self.assertEqual(302, response.status_code)
+        user = User.objects.get(username='username')
+        self.assertTrue(user.check_password("old_pwd"))
+
+
+        # situation1 == normal situation
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd',
+                                                   'newpassword': 'new_password',
+                                                   'newpassword1': 'new_password'})
+        self.assertEqual(302, response.status_code)
+
+        user = User.objects.get(username='username')
+        self.assertTrue(user.check_password("new_password"))
+
+        response = self.client.get('/change_password_ok/')
+        self.assertEqual(200, response.status_code)
+
+
+
+class ChangeUserDataTest(TestCase):
 
     def test_user_data_change(self):
         response = self.client.post('/signup/', {'username': 'someday',
@@ -123,8 +250,11 @@ class UserDataTest(TestCase):
                                                 'last_name': 'past_FN'})
         self.assertEqual(200, response.status_code)
 
-        response = self.client.post('/login/', {'username': 'username',
-                                                'password': 'old_pwd'})
+        response = self.client.logout()
+
+
+        response = self.client.post('/login/', {'username': 'someday',
+                                                'password': 'past'})
         self.assertEqual(200, response.status_code)
 
         response=self.client.post('/change_user_data/', {'new_first_name': 'futureFN',
