@@ -4,10 +4,11 @@
 <script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>
 <script>
 
+//implement the function of secondary menu
 $("#table").ready(function() {
     $('#table').bind('rowAddOrRemove', function(event){
         var ii=document.all.table.rows.length;
-
+//listen to the change of the menu
         $("#menu"+ii).change(function() {
 
             var el = $(this) ;
@@ -16,6 +17,8 @@ $("#table").ready(function() {
                 $("#second"+ii).append("<option>Boolean</option>");
                 $("#second"+ii).append("<option>String</option>");
                 $("#second"+ii).append("<option>Integer</option>");
+
+                // add the data type name from list "options" to the secondary menu
                 $("#second"+ii).append("<option>"+$("#tablename").val()+"</option>"+
                                         "{% for option in options %}"+
                                         "<option>"+"{{ option }}"+"</option>"+
@@ -40,21 +43,24 @@ $("#table").ready(function() {
 </script>
 
 <script language="javascript">
-
+//implement the function of row insertion
 function insertrow(){
     newRow=document.all.table.insertRow(-1);
     var i = document.all.table.rows.length;
     newcell=newRow.insertCell();
+    //insert text field in the cell
     newcell.innerHTML='<input type="text" class="item'+i+'" id="text'+i+'" name="name" />';
     newcell=newRow.insertCell() ;
+    //insert dropdown menu in the cell
     newcell.innerHTML='<select class="item'+i+'" id= "menu'+i+'" name="type" ><option value="integer">Integer</option><option value="string">String</option><option value="boolean">Boolean</option><option value="date">Date</option><option value="list">List</option></select><select id="second'+i+'" class="item'+i+'"  name="second" ></select>';
     newcell=newRow.insertCell() ;
+    //insert checkbox in the cell
     newcell.innerHTML='<input type="checkbox" class="item'+i+'" name="allownull" />';
     $('#table').trigger('rowAddOrRemove');
 }
 
 function deleterow(){
-
+    //implement the function of row deletion
     var lastRowIndex=document.all.table.rows.length-1;
     document.all.table.deleteRow(lastRowIndex);
     $('#table').trigger('rowAddOrRemove');
@@ -65,6 +71,7 @@ function deleterow(){
 
 <script language="javascript">
 
+//The function is based on http://css-tricks.com/snippets/jquery/serialize-form-to-json/
 $.fn.serializeObject = function(){
     var output = {};
     var array = this.serializeArray();
@@ -83,18 +90,19 @@ $.fn.serializeObject = function(){
 };
 
 $(function() {
+//implement the function of generating json
     $('form').submit(function() {
-        $('#result').text("{\n");
-        $('#result').append('"tablename"'+':'+'"'+$("#tablename").val()+'"'+",\n");
+        $('#result').text("{");
+        $('#result').append('"tablename"'+':'+'"'+$("#tablename").val()+'"'+",");
         var ii=document.all.table.rows.length;
-        $('#result').append('"fields": [\n');
+        $('#result').append('"fields": [');
         for(i=2;i<ii;i++){
 
-        $('#result').append(JSON.stringify($(".item"+i).serializeObject())+",\n");
+        $('#result').append(JSON.stringify($(".item"+i).serializeObject())+",");
 
         }
-        $('#result').append(JSON.stringify($(".item"+ii).serializeObject())+"\n");
-        $('#result').append(']\n');
+        $('#result').append(JSON.stringify($(".item"+ii).serializeObject()));
+        $('#result').append(']');
         $('#result').append('}');
         return false;
     });
