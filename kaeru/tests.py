@@ -47,6 +47,13 @@ class LoginTest(TestCase):
                                                 'password': user.password})
         self.assertEqual(200, response.status_code)
 
+    def xx(self):
+        '''
+        there should be a admin site login test!
+        :return:
+        '''
+
+
 class UserPasswordChangeTest(TestCase):
 
     def test_user_pwd1(self):

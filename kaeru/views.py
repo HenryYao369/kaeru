@@ -21,7 +21,7 @@ from kaeru.models import Code
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django import forms
-from kaeru.forms import changepasswordForm,change_user_data_Form
+from kaeru.forms import changepasswordForm,Change_user_data_Form
 from django.template import RequestContext
 
 
@@ -220,29 +220,36 @@ def change_user_data(request):
     cookie = _get_csrf_cookie(request)
 
     template = {}
-    form = change_user_data_Form()
+    old_user = request.user
+    form = Change_user_data_Form(initial={'new_first_name': old_user.first_name,
+                                          'new_last_name':old_user.last_name,
+                                          'new_email':old_user.email
+                                          })
+
+
     if request.method=="POST":
         # form = change_user_data_Form(request.POST.copy())
 
         # if form.is_valid():
-        owner = request.user
-        username = owner.username
+        user = request.user
+
         new_first_name = request.POST.get("new_first_name") #form.cleaned_data["new_first_name"]
         new_last_name = request.POST.get("new_last_name")# form.cleaned_data["new_last_name"]
         new_email = request.POST.get("new_email")#form.cleaned_data["new_email"]
 
 
-        owner.first_name = new_first_name
-        owner.last_name = new_last_name
-        owner.email = new_email
+        user.first_name = new_first_name
+        user.last_name = new_last_name
+        user.email = new_email
 
-        owner.save()
-        cookie['user'] = owner
+        user.save()
+        cookie['user'] = user
 
         return HttpResponseRedirect(reverse("kaeru.views.change_user_data_ok"))
         # note: after editing one's data, (s)he is logged out. One must log in to see the changes again!
 
     template["form"] = form
+
     return render(request,"changeUserData.html",template,)
 
 

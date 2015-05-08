@@ -9,9 +9,11 @@ class changepasswordForm(forms.Form):
     newpassword1 = forms.CharField(label=('New Password Confirm'),max_length=30,widget=forms.PasswordInput(attrs={'size': 20,}))
 
 
-class change_user_data_Form(forms.Form):
-    new_first_name = forms.CharField(label=('New First Name:'), max_length=20,widget=forms.TextInput(attrs={'size': 20,}))
-    new_last_name = forms.CharField(label=('New Last Name'), max_length=20,)
-    new_email = forms.EmailField(label=('New Email'), min_length=3)
+class Change_user_data_Form(forms.Form):
+    new_first_name = forms.CharField(label=('Your First Name'),
+                                     max_length=20,widget=forms.TextInput(attrs={'size': 20,})
+                                     )
+    new_last_name = forms.CharField(label=('Your Last Name'), max_length=20,)
+    new_email = forms.EmailField(label=('Your Email'), min_length=3)
 
 
