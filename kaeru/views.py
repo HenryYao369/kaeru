@@ -227,10 +227,15 @@ def signup_view(request):
 
 
 
-@login_required()
+# @login_required()
 def change_user_data(request):
 
     cookie = _get_csrf_cookie(request)
+
+    if not request.user.is_authenticated():
+
+        cookie['error_message'] = "Please login first."
+        return render_to_response('login.html', cookie)
 
     template = {}
     old_user = request.user
@@ -267,11 +272,16 @@ def change_user_data(request):
 
 
 # change password
-@login_required
+# @login_required
 def change_password(request):
 
+    cookie = _get_csrf_cookie(request)
+
     if not request.user.is_authenticated():
-        return HttpResponseRedirect(reverse("loginerror"))  # there is an error here!
+
+        cookie['error_message'] = "Please login first."
+        return render_to_response('login.html', cookie)
+
 
     template = {}
     form = changepasswordForm()
@@ -284,29 +294,34 @@ def change_password(request):
             oldpassword = form.cleaned_data["oldpassword"]
             newpassword = form.cleaned_data["newpassword"]
             newpassword1 = form.cleaned_data["newpassword1"]
+
             user = auth.authenticate(username=username,password=oldpassword)
             if user: # origin pwd correct
                 if newpassword == newpassword1:
                     user.set_password(newpassword)
                     user.save()
-                    print '1'
+
                     return HttpResponseRedirect(reverse("kaeru.views.change_password_ok"))
+
                 else:
-                    template["word"] = 'new pwd not equal'
+                    template["error_msg"] = 'New password and confirmation are not equal. Please try again.'
                     template["form"] = form
-                    print '2'
+
                     return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
             else:  # origin pwd wrong
                 if newpassword == newpassword1:
-                    template["word"] = 'origin pwd wrong'
+                    template["error_msg"] = 'The old password is wrong. Please try again.'
                     template["form"] = form
-                    print '3'
+
                     return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
+
                 else:
-                    template["word"] = 'origin pwd wrong, new pwd not equal'
+                    template["error_msg"] = 'The old password is wrong. New password and confirmation are not equal. ' \
+                                       'Please try again.'
                     template["form"] = form
-                    print '4'
+
                     return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
+
     template["form"] = form
     return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
 

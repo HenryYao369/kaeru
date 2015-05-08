@@ -6,7 +6,7 @@ from django import forms
 class changepasswordForm(forms.Form):
     oldpassword = forms.CharField(label=('Old Password'),max_length=30,widget=forms.PasswordInput(attrs={'size': 20,}))
     newpassword = forms.CharField(label=("New Password"),max_length=30,widget=forms.PasswordInput(attrs={'size': 20,}))
-    newpassword1 = forms.CharField(label=('New Password Confirm'),max_length=30,widget=forms.PasswordInput(attrs={'size': 20,}))
+    newpassword1 = forms.CharField(label=('New Password Confirmation'),max_length=30,widget=forms.PasswordInput(attrs={'size': 20,}))
 
 
 class Change_user_data_Form(forms.Form):
