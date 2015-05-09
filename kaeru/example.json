@@ -6,7 +6,7 @@
       "fields": [
         {
           "name": "username",
-          "type": "STRING",
+          "type": "TEXT",
           "primary": true,
           "unique": true,
           "null": false,

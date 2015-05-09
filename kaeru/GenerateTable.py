@@ -97,18 +97,19 @@ def getAllTableNames(username, delimiter):
 #
 def returnPrimary(username,tableName,data):
 
-    #Checking JSON file
-    for table in data['table']:
-        if sanitizeMe(table['name']) == tableName:
-            for eachField in table['fields']:
-                if eachField['primary'] == True:
-                    return [sanitizeMe(eachField['name']), sanitizeMe(eachField['type'])]
+    if not data is None:
+        #Checking JSON file
+        for table in data['table']:
+            if sanitizeMe(table['name']) == tableName:
+                for eachField in table['fields']:
+                    if eachField['primary'] == True:
+                        return [sanitizeMe(eachField['name']), sanitizeMe(eachField['type'])]
 
-        #Table doesn't have user specified primary key column, retur the default 'ID'
-        return ['ID', 'INTEGER']
+                #Table doesn't have user specified primary key column, retur the default 'ID'
+                return ['ID', 'INTEGER']
 
     #Checking existed tables from database
-    result = checkIfExistedInRealTime(username,False)
+    result = checkIfExistedInRealTime(username + '_' + tableName,False)
     #returns empty string if table cannot be found
     return result
 
@@ -317,13 +318,14 @@ def processJSON(username, dbname, jsonfilename):
         #CREATED SQL QUERY
         #print(statement)
 
-        c.executescript(statement)
+        try:
+            c.executescript(statement)
+        #this happens when u try to insert a record that isn't unique but have unique constraint etc. Can be ignored
+        #for test cases
+        except sqlite3.IntegrityError:
+                pass
+
         conn.close()
 
     except KeyError:
         pass
-
-
-#Executing main program
-# we should pass the username instead
-processJSON('anyUser','example.db','example.json')

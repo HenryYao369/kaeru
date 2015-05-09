@@ -1,0 +1,18 @@
+{
+  "operation": "create",
+  "table": [
+    {
+      "name": "testTable",
+      "fields": [
+        {
+          "name": "username",
+          "type": "TEXT",
+          "primary": true,
+          "unique": true,
+          "null": false,
+          "default": null
+        }
+      ]
+	}
+  ]
+}
