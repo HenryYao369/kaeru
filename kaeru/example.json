@@ -1,0 +1,102 @@
+{
+  "operation": "create",
+  "table": [
+    {
+      "name": "myMaliciousta''=''ble6",
+      "fields": [
+        {
+          "name": "username",
+          "type": "TEXT",
+          "primary": true,
+          "unique": true,
+          "null": false,
+          "default": null
+        },
+        {
+          "name": "password",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "null": false,
+          "default": null
+        },
+        {
+          "name": "site",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "null": false,
+          "default": "localhost"
+        }
+      ],
+      "foreign-fields": [
+        {
+          "foreign-table":"myMalicioustable4",
+          "relation-model":"M-to-1"
+        },
+        {
+          "foreign-table":"myMalicioustable3",
+          "relation-model":"M-to-M"
+        }
+      ]
+    },
+    {
+      "name": "myMaliciousta''=''ble4",
+      "fields": [
+        {
+          "name": "username",
+          "type": "TEXT",
+          "primary": true,
+          "unique": true,
+          "null": false,
+          "default": null
+        },
+        {
+          "name": "password",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "null": false,
+          "default": null
+        },
+        {
+          "name": "site",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "null": false,
+          "default": "localhost"
+        }
+      ]
+    },
+        {
+      "name": "myMaliciousta''=''ble3",
+      "fields": [
+        {
+          "name": "username",
+          "type": "TEXT",
+          "primary": true,
+          "unique": true,
+          "null": false,
+          "default": null
+        },
+        {
+          "name": "password",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "null": false,
+          "default": null
+        },
+        {
+          "name": "site",
+          "type": "TEXT",
+          "primary": false,
+          "unique": false,
+          "null": false,
+          "default": "localhost"
+        }
+      ]
+    }
+  ]
+}
