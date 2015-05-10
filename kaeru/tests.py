@@ -9,7 +9,15 @@ from django.contrib.auth.hashers import make_password
 
 
 class AdminTest(LiveServerTestCase):
+    '''
+    admin tests: For testing admin site
+    '''
+
     def test_login(self):
+        '''
+        test admin login and logout
+        :return:
+        '''
         my_admin = User.objects.create_superuser('admin', 'myemail@test.com', 'admin_pwd')
         c = Client()
 
@@ -25,6 +33,10 @@ class AdminTest(LiveServerTestCase):
 
 
     def test_login2(self):
+        '''
+        test admin login and auth
+        :return:
+        '''
         password = 'mypassword'
 
         my_admin = User.objects.create_superuser('myadmin', 'myemail@test.com', password)
@@ -34,7 +46,7 @@ class AdminTest(LiveServerTestCase):
         # You'll need to log him in before you can send requests through the client
         response = c.login(username=my_admin.username, password=password)
         self.assertTrue(response)
-        self.assertTrue(my_admin.is_staff)
+        self.assertTrue(my_admin.is_staff) # test admin auth
 
 
 class LoginTest(TestCase):
@@ -89,8 +101,16 @@ class LoginTest(TestCase):
 
 
 class UserPasswordChangeTest(TestCase):
+    '''
+    test "change_password" functions in views.py
+    testing if user could successfully change their passwords, as well as some other cases with error messages.
+    '''
 
     def test_user_pwd_basic(self):
+        '''
+        basic tests.
+        :return:
+        '''
         c = Client()
 
         response = self.client.post('/signup/', {'username': 'username',
@@ -112,6 +132,10 @@ class UserPasswordChangeTest(TestCase):
         self.assertEqual(True,user.check_password("new_pwd"))
 
     def test_user_pwd2(self):
+        '''
+        Another method to test change_password(); with login prerequisite.
+        :return:
+        '''
         response = self.client.post('/signup/', {'username': 'someday',
                                                 'password': 'past',
                                                 'email': 'old@past.com',
@@ -121,6 +145,7 @@ class UserPasswordChangeTest(TestCase):
 
         self.client.logout()
 
+        # user must login correctly, then could change password.
         response = self.client.post('/login/', {'username': 'someday',
                                                 'password': 'wrong_pwd'})
         self.assertEqual(200, response.status_code)
@@ -144,7 +169,11 @@ class UserPasswordChangeTest(TestCase):
         user = User.objects.get(username='someday')
         self.assertTrue(user.check_password("new_pwd"))
 
-    def test_user_pwd_corner_cases(self):
+    def test_user_pwd_four_cases(self):
+        '''
+        test four cases in change_password()
+        :return:
+        '''
 
         c = Client()
 
@@ -191,6 +220,37 @@ class UserPasswordChangeTest(TestCase):
         self.assertTrue(user.check_password("old_pwd"))
 
 
+        # situation1 == normal situation
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd',
+                                                   'newpassword': 'new_password',
+                                                   'newpassword1': 'new_password'})
+        self.assertEqual(302, response.status_code)
+
+        user = User.objects.get(username='username')
+        self.assertTrue(user.check_password("new_password"))
+
+        response = self.client.get('/change_password_ok/')
+        self.assertEqual(200, response.status_code)
+
+
+
+    def test_user_pwd_corner_cases(self):
+        '''
+        some corner cases that need to be tested.(including future work)
+        :return:
+        '''
+
+        c = Client()
+
+        response = self.client.post('/signup/', {'username': 'username',
+                                                'password': 'old_pwd',
+                                                'email': 'old@email.com',
+                                                'first_name': 'old_first_name',
+                                                'last_name': 'old_last_name'})
+        self.assertEqual(200, response.status_code)
+
+        c.logout()
+        c.login(username='username', password='old_pwd')
 
         # corner case: null input
         response=c.post('/change_password/', {'oldpassword': 'old_pwd',
@@ -226,23 +286,19 @@ class UserPasswordChangeTest(TestCase):
         self.assertTrue(user.check_password("old_pwd"))
 
 
-        # situation1 == normal situation
-        response=c.post('/change_password/', {'oldpassword': 'old_pwd',
-                                                   'newpassword': 'new_password',
-                                                   'newpassword1': 'new_password'})
-        self.assertEqual(302, response.status_code)
-
-        user = User.objects.get(username='username')
-        self.assertTrue(user.check_password("new_password"))
-
-        response = self.client.get('/change_password_ok/')
-        self.assertEqual(200, response.status_code)
-
-
 
 class ChangeUserDataTest(TestCase):
+    '''
+    Test change_user_data() function in views.py
+    Users' data includes: First name, last name and email address.
+    We use Django built-in User Model.
+    '''
 
     def test_user_data_change(self):
+        '''
+        basic test.
+        :return:
+        '''
         response = self.client.post('/signup/', {'username': 'someday',
                                                 'password': 'past',
                                                 'email': 'old@past.com',
@@ -272,6 +328,10 @@ class ChangeUserDataTest(TestCase):
 
 
     def test_user_data1(self):
+        '''
+        Another method for basic tests.
+        :return:
+        '''
         c = Client()
 
         response = self.client.post('/signup/', {'username': 'username',
@@ -298,6 +358,11 @@ class ChangeUserDataTest(TestCase):
 
 
     def test_user_data(self):
+        '''
+        A complete procedure (including login and logout) to test change_user_data function.
+        :return:
+        '''
+
         # Initial account setup and signing
         response = self.client.post('/signup/', {'username': 'username',
                                                 'password': 'old_pwd',
@@ -338,6 +403,9 @@ class ChangeUserDataTest(TestCase):
 
 # AboutTest ?
 class UrlsTest(TestCase):
+    '''
+    Some URL tests to test if some URL is working properly.
+    '''
 
     def test_login_page_exists(self):
         """
