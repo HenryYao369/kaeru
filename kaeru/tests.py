@@ -4,6 +4,22 @@ from django.contrib.auth.models import User
 from kaeru.models import Project
 from kaeru.models import Code
 from kaeru.models import Page
+from django.test import Client, LiveServerTestCase
+from django.contrib.auth.hashers import make_password
+
+
+class AdminTest(LiveServerTestCase):
+    def test_login(self):
+        c = Client()
+
+        response = c.get('/admin/')
+        self.assertEquals(response.status_code,302)
+        # self.assertTrue('Log in' in response.content)
+
+        c.login(username = 'username',password='password')
+        response = c.get('/admin/')
+        self.assertEquals(response.status_code,302)
+        # self.assertTrue('Log out' in response.content)
 
 class LoginTest(TestCase):
 
@@ -44,6 +60,101 @@ class LoginTest(TestCase):
                                                 'password': user.password})
         self.assertEqual(200, response.status_code)
 
+    def xx(self):
+        '''
+        there should be a admin site login test!
+        :return:
+        '''
+
+
+class UserPasswordChangeTest(TestCase):
+
+    def test_user_pwd1(self):
+        c = Client()
+
+        response = self.client.post('/signup/', {'username': 'username',
+                                                'password': 'old_pwd',
+                                                'email': 'old@email.com',
+                                                'first_name': 'old_first_name2',
+                                                'last_name': 'old_last_name'})
+        self.assertEqual(200, response.status_code)
+
+        c.login(username='username', password='old_pwd')
+
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd',
+                                                   'newpassword': 'new_pwd',
+                                                   'newpassword1': 'new_pwd'})
+        self.assertEqual(302, response.status_code)
+
+        user = User.objects.get(username='username')
+        self.assertEqual(True,user.check_password("new_pwd"))
+
+
+class UserDataTest(TestCase):
+
+    def test_user_data1(self):
+        c = Client()
+
+        response = self.client.post('/signup/', {'username': 'username',
+                                                'password': 'old_pwd',
+                                                'email': 'old@email.com',
+                                                'first_name': 'old_first_name2',
+                                                'last_name': 'old_last_name'})
+        self.assertEqual(200, response.status_code)
+
+        c.login(username='username', password='old_pwd')
+
+        response=c.post('/change_user_data/', {'new_first_name': 'newFN',
+                                                   'new_last_name': 'newLN',
+                                                   'new_email': 'new@email.com'})
+        user = User.objects.get(username='username')
+        self.assertEqual(302, response.status_code)
+
+        self.assertEqual("newFN",user.first_name)
+        self.assertEqual("newLN",user.last_name)
+        self.assertEqual("new@email.com",user.email)
+
+
+    def test_user_data(self):
+        # Initial account setup and signing
+        response = self.client.post('/signup/', {'username': 'username',
+                                                'password': 'old_pwd',
+                                                'email': 'old@email.com',
+                                                'first_name': 'old_first_name',
+                                                'last_name': 'old_last_name'})
+        self.assertEqual(200, response.status_code)
+
+        # user = User.objects.get(username='old_username')
+
+        response = self.client.post('/login/', {'username': 'old_username',
+                                                'password': 'old_pwd'})
+        self.assertEqual(200, response.status_code)
+
+
+        response = self.client.post('/change_user_data/', {'new_first_name': 'newFN',
+                                                   'new_last_name': 'newLN',
+                                                   'new_email': 'new@email.com'})
+        self.assertEqual(302, response.status_code) # Since we use Redirect here, it is 302 not 200.
+
+
+        response = self.client.get('/change_user_data_ok/')
+        self.assertEqual(200, response.status_code)
+
+
+        self.client.logout()
+        self.client.login(username='username', password='old_pwd')
+
+        user = User.objects.get(username='username')
+        self.assertEqual("newFN",user.first_name)
+        self.assertEqual("newLN",user.last_name)
+        self.assertEqual("new@email.com",user.email)
+
+
+
+
+
+
+
 # AboutTest ?
 class UrlsTest(TestCase):
 
@@ -75,12 +186,29 @@ class UrlsTest(TestCase):
         response = self.client.get('/people/')
         self.assertEqual(200,response.status_code)
 
+
+    def test_projects_exists(self):
+        """
+        Check that projects page exists
+        """
+        response = self.client.get('/projects/')
+        self.assertEqual(302,response.status_code) # 302? 200?
+
+    def test_change_password_exists(self):
+        """
+        Check that change_password page exists
+        """
+        response = self.client.get('/change_password/')  # 302? 200?
+        self.assertEqual(200,response.status_code)
+
+
     def test_ide_exists(self):
         """
         Check that IDE page exists
         """
         response = self.client.get('/ide/')
         self.assertEqual(200,response.status_code)
+
 
     def test_404(self):
         """

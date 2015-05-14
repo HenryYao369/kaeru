@@ -1,11 +1,13 @@
+
 from django.contrib.auth.models import Group as DjangoGroup
 from django.contrib.auth.models import User as DjangoUser
+
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.http import HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response,render
 from django.core.context_processors import csrf
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -16,7 +18,16 @@ from kaeru.models import Project
 from kaeru.models import Page
 from kaeru.models import Code
 
+from django.http import HttpResponseRedirect, HttpResponse
+from django.core.urlresolvers import reverse
+from django import forms
+from kaeru.forms import changepasswordForm,Change_user_data_Form
+from django.template import RequestContext
+
+
+
 from itertools import chain
+
 
 import os
 import kaeru.utils
@@ -127,7 +138,7 @@ def index_view(request):
         # Create the account
         raw_username = request.POST.get('username', None)
         raw_password = request.POST.get('password', None)
-        user, is_new = auth.models.User.objects.get_or_create(
+        new_user, is_new = auth.models.User.objects.get_or_create(
                    username   = raw_username,
                    email      = request.POST.get('email', None),
                    first_name = request.POST.get('first_name', None),
@@ -135,11 +146,24 @@ def index_view(request):
             )
         if is_new:
             # Just made a new user. Welcome aboard!
-            user.set_password(raw_password)
-            user.groups.add(auth.models.Group.objects.get(name="KaeruUsers"))
-            user.save()
+            new_user.set_password(raw_password)
+
+            # user.groups.add(auth.models.Group.objects.get(name="KaeruUsers"))
+
+            '''To create new Group. '''
+            my_group, is_created = DjangoGroup.objects.get_or_create(name='KaeruUsers')
+            new_user.groups.add(my_group)
+            # mygroup.save()
+
+
+            '''future work: set group permissions'''
+            # my_group.permissions = [permission_list]
+
+
+            new_user.save()
             cookie['signup_success'] = True
-            cookie['user'] = user
+            cookie['user'] = new_user
+
             # log in
             auth.login(request, auth.authenticate(username=raw_username, password=raw_password))
             return render_to_response(url, cookie)
@@ -200,6 +224,118 @@ def signup_view(request):
     else:
         # Show the sign up page
         return render_to_response(url, cookie)
+
+
+
+# @login_required()
+def change_user_data(request):
+
+    cookie = _get_csrf_cookie(request)
+
+    if not request.user.is_authenticated():
+
+        cookie['error_message'] = "Please login first."
+        return render_to_response('login.html', cookie)
+
+    template = {}
+    old_user = request.user
+    form = Change_user_data_Form(initial={'new_first_name': old_user.first_name,
+                                          'new_last_name':old_user.last_name,
+                                          'new_email':old_user.email
+                                          })
+
+
+    if request.method=="POST":
+        # form = change_user_data_Form(request.POST.copy())
+
+        # if form.is_valid():
+        user = request.user
+
+        new_first_name = request.POST.get("new_first_name") #form.cleaned_data["new_first_name"]
+        new_last_name = request.POST.get("new_last_name")# form.cleaned_data["new_last_name"]
+        new_email = request.POST.get("new_email")#form.cleaned_data["new_email"]
+
+
+        user.first_name = new_first_name
+        user.last_name = new_last_name
+        user.email = new_email
+
+        user.save()
+        cookie['user'] = user
+
+        return HttpResponseRedirect(reverse("kaeru.views.change_user_data_ok"))
+        # note: after editing one's data, (s)he is logged out. One must log in to see the changes again!
+
+    template["form"] = form
+
+    return render(request,"changeUserData.html",template,)
+
+
+# change password
+# @login_required
+def change_password(request):
+
+    cookie = _get_csrf_cookie(request)
+
+    if not request.user.is_authenticated():
+
+        cookie['error_message'] = "Please login first."
+        return render_to_response('login.html', cookie)
+
+
+    template = {}
+    form = changepasswordForm()
+
+    if request.method=="POST":
+        form = changepasswordForm(request.POST.copy())
+
+        if form.is_valid():
+            username = request.user.username
+            oldpassword = form.cleaned_data["oldpassword"]
+            newpassword = form.cleaned_data["newpassword"]
+            newpassword1 = form.cleaned_data["newpassword1"]
+
+            user = auth.authenticate(username=username,password=oldpassword)
+            if user: # origin pwd correct
+                if newpassword == newpassword1:
+                    user.set_password(newpassword)
+                    user.save()
+
+                    return HttpResponseRedirect(reverse("kaeru.views.change_password_ok"))
+
+                else:
+                    template["error_msg"] = 'New password and confirmation are not equal. Please try again.'
+                    template["form"] = form
+
+                    return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
+            else:  # origin pwd wrong
+                if newpassword == newpassword1:
+                    template["error_msg"] = 'The old password is wrong. Please try again.'
+                    template["form"] = form
+
+                    return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
+
+                else:
+                    template["error_msg"] = 'The old password is wrong. New password and confirmation are not equal. ' \
+                                       'Please try again.'
+                    template["form"] = form
+
+                    return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
+
+    template["form"] = form
+    return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
+
+
+def change_password_ok(request):
+    return render_to_response("changepasswordOK.html")
+
+def change_user_data_ok(request):
+    return render_to_response("changeUserDataOK.html")
+
+
+def tutorial_view(request):
+    return render_to_response("tutorial.html")
+
 
 # The projects view is for user-based administrative management.
 # Specifically, it allows them to do the following: 
@@ -341,3 +477,4 @@ def pages_view(request, url_username=None, url_projectname=None, url_pagename=No
         return render_to_response('page.html', cookie)
     except (User.DoesNotExist, Project.DoesNotExist, Page.DoesNotExist, Code.DoesNotExist):
         return render_to_response('404.html')
+
