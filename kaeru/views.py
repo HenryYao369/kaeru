@@ -31,6 +31,7 @@ from itertools import chain
 
 import os
 import kaeru.utils
+import sqlite3
 
 # These pages should live in 'kaeru/templates/about/'
 # Alternatively, these names could live in a database
@@ -80,8 +81,8 @@ def create_test_tables(request):
     connection_lite = sqlite3.connect('elements.db')
     cursor_lite = connection_lite.cursor()
     #cursor_lite.execute("create table Friend(username TEXT, password TEXT)")
-    cursor_lite.execute("insert into Friend values ('test3','test4')")
-    myRows = cursor_lite.execute("select * from Friend where password='test4'")
+    #cursor_lite.execute("insert into Friend values ('test3','test4')")
+    myRows = cursor_lite.execute("select * from Friend ")
     html += "no of columns==>" 
     for rows_lite in myRows:
         html += rows_lite[0]

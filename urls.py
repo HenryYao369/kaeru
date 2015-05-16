@@ -45,7 +45,7 @@ urlpatterns = patterns('',
     url(r'^create_test_tables/$' , 'kaeru.views.create_test_tables'),
     url(r'^save_user_data/$' , 'kaeru.views.save_user_data'),
     url(r'^get_all_type_data/$' , 'kaeru.views.get_all_type_data'),
-    url(r'^get_type_data_by_key/$' , 'kaeru.views.get_type_data_by_key')
+    url(r'^get_type_data_by_key/$' , 'kaeru.views.get_type_data_by_key'),
     #End of Code - Tirth
 
 
