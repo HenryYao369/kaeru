@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-	<div id="directory" class="small-2 columns">
+<div class="row" data-equalizer>
+	<div id="directory" class="small-2 columns full-height" data-equalizer-watch>
 		<button>Directory</button>
 		<button class="right tiny" id="min-directory-button">_</button>
 		<div class="right" id="dir-max-buttons">
@@ -16,7 +16,7 @@
 			<li><a href="#">File 4</a></li>
 		</ul>
 	</div>
-	<div id="code" class="small-3 columns">
+	<div id="code" class="small-3 columns full-height" data-equalizer-watch>
 		<button class="hide left tiny" id="max-directory-button">Directory</button>
 		<button class="right tiny" id="min-code-button">_</button>
 		<button class="hide right tiny" id="max-output-button2">Output</button>
@@ -38,7 +38,7 @@
 			</div>
 		</div>
 	</div>
-	<div id="output" class="small-7 columns">
+	<div id="output" class="small-7 columns full-height"data-equalizer-watch>
 		<div class="left" id="output-max-buttons">
 			<button class="hide tiny" id="max-directory-button2">Directory</button>
 			<button class="hide tiny" id="max-code-button2">Code</button>
