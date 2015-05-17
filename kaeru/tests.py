@@ -9,17 +9,45 @@ from django.contrib.auth.hashers import make_password
 
 
 class AdminTest(LiveServerTestCase):
+    '''
+    admin tests: For testing admin site
+    '''
+
     def test_login(self):
+        '''
+        test admin login and logout
+        :return:
+        '''
+        my_admin = User.objects.create_superuser('admin', 'myemail@test.com', 'admin_pwd')
         c = Client()
 
         response = c.get('/admin/')
+        c.logout()
         self.assertEquals(response.status_code,302)
         # self.assertTrue('Log in' in response.content)
 
-        c.login(username = 'username',password='password')
+        c.login(username = 'admin',password='admin_pwd')
         response = c.get('/admin/')
-        self.assertEquals(response.status_code,302)
-        # self.assertTrue('Log out' in response.content)
+        self.assertEquals(response.status_code,200)
+        self.assertTrue('Log out' in response.content)
+
+
+    def test_login2(self):
+        '''
+        test admin login and auth
+        :return:
+        '''
+        password = 'mypassword'
+
+        my_admin = User.objects.create_superuser('myadmin', 'myemail@test.com', password)
+
+        c = Client()
+
+        # You'll need to log him in before you can send requests through the client
+        response = c.login(username=my_admin.username, password=password)
+        self.assertTrue(response)
+        self.assertTrue(my_admin.is_staff) # test admin auth
+
 
 class LoginTest(TestCase):
 
@@ -60,25 +88,39 @@ class LoginTest(TestCase):
                                                 'password': user.password})
         self.assertEqual(200, response.status_code)
 
-    def xx(self):
+    def test_login_admin(self):
         '''
-        there should be a admin site login test!
+        A admin site login test
         :return:
         '''
+        user = User.objects.get()
+        response = self.client.post('/admin/', {'username': user.username,
+                                                'password': user.password})
+        self.assertEqual(302, response.status_code)
+        self.assertFalse(user.is_staff)
 
 
 class UserPasswordChangeTest(TestCase):
+    '''
+    test "change_password" functions in views.py
+    testing if user could successfully change their passwords, as well as some other cases with error messages.
+    '''
 
-    def test_user_pwd1(self):
+    def test_user_pwd_basic(self):
+        '''
+        basic tests.
+        :return:
+        '''
         c = Client()
 
         response = self.client.post('/signup/', {'username': 'username',
                                                 'password': 'old_pwd',
                                                 'email': 'old@email.com',
-                                                'first_name': 'old_first_name2',
+                                                'first_name': 'old_first_name',
                                                 'last_name': 'old_last_name'})
         self.assertEqual(200, response.status_code)
 
+        c.logout()
         c.login(username='username', password='old_pwd')
 
         response=c.post('/change_password/', {'oldpassword': 'old_pwd',
@@ -89,10 +131,207 @@ class UserPasswordChangeTest(TestCase):
         user = User.objects.get(username='username')
         self.assertEqual(True,user.check_password("new_pwd"))
 
+    def test_user_pwd2(self):
+        '''
+        Another method to test change_password(); with login prerequisite.
+        :return:
+        '''
+        response = self.client.post('/signup/', {'username': 'someday',
+                                                'password': 'past',
+                                                'email': 'old@past.com',
+                                                'first_name': 'past_FN',
+                                                'last_name': 'past_FN'})
+        self.assertEqual(200, response.status_code)
 
-class UserDataTest(TestCase):
+        self.client.logout()
+
+        # user must login correctly, then could change password.
+        response = self.client.post('/login/', {'username': 'someday',
+                                                'password': 'wrong_pwd'})
+        self.assertEqual(200, response.status_code)
+
+        response=self.client.post('/change_password/', {'oldpassword': 'old_pwd',
+                                                   'newpassword': 'new_pwd',
+                                                   'newpassword1': 'new_pwd'})
+        self.assertEqual(200, response.status_code)
+        user = User.objects.get(username='someday')
+        self.assertFalse(user.check_password("new_pwd"))
+
+
+        response = self.client.post('/login/', {'username': 'someday',
+                                                'password': 'past'})
+        self.assertEqual(200, response.status_code)
+
+        response=self.client.post('/change_password/', {'oldpassword': 'past',
+                                                   'newpassword': 'new_pwd',
+                                                   'newpassword1': 'new_pwd'})
+        self.assertEqual(302, response.status_code)
+        user = User.objects.get(username='someday')
+        self.assertTrue(user.check_password("new_pwd"))
+
+    def test_user_pwd_four_cases(self):
+        '''
+        test four cases in change_password()
+        :return:
+        '''
+
+        c = Client()
+
+        response = self.client.post('/signup/', {'username': 'username',
+                                                'password': 'old_pwd',
+                                                'email': 'old@email.com',
+                                                'first_name': 'old_first_name',
+                                                'last_name': 'old_last_name'})
+        self.assertEqual(200, response.status_code)
+
+        c.logout()
+        c.login(username='username', password='old_pwd')
+
+        # situation2: old pwd wrong
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd_WRONG',
+                                                   'newpassword': 'new_pwd',
+                                                   'newpassword1': 'new_pwd'})
+        self.assertEqual(200, response.status_code)
+
+        user = User.objects.get(username='username')
+        self.assertFalse(user.check_password("new_pwd"))
+        self.assertTrue(user.check_password("old_pwd"))
+
+        # situation3: new password and confirmation are not equal
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd',
+                                                   'newpassword': 'new_pwd',
+                                                   'newpassword1': 'new_pwd_NOT_EQUAL'})
+        self.assertEqual(200, response.status_code)
+
+        user = User.objects.get(username='username')
+        self.assertFalse(user.check_password("new_pwd"))
+        self.assertFalse(user.check_password("new_pwd_NOT_EQUAL"))
+        self.assertTrue(user.check_password("old_pwd"))
+
+        # situation4: old pwd input wrong, new password and confirmation are not equal
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd_WRONG',
+                                                   'newpassword': 'new_pwd',
+                                                   'newpassword1': 'new_pwd_NOT_EQUAL'})
+        self.assertEqual(200, response.status_code)
+
+        user = User.objects.get(username='username')
+        self.assertFalse(user.check_password("new_pwd"))
+        self.assertFalse(user.check_password("new_pwd_NOT_EQUAL"))
+        self.assertTrue(user.check_password("old_pwd"))
+
+
+        # situation1 == normal situation
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd',
+                                                   'newpassword': 'new_password',
+                                                   'newpassword1': 'new_password'})
+        self.assertEqual(302, response.status_code)
+
+        user = User.objects.get(username='username')
+        self.assertTrue(user.check_password("new_password"))
+
+        response = self.client.get('/change_password_ok/')
+        self.assertEqual(200, response.status_code)
+
+
+
+    def test_user_pwd_corner_cases(self):
+        '''
+        some corner cases that need to be tested.(including future work)
+        :return:
+        '''
+
+        c = Client()
+
+        response = self.client.post('/signup/', {'username': 'username',
+                                                'password': 'old_pwd',
+                                                'email': 'old@email.com',
+                                                'first_name': 'old_first_name',
+                                                'last_name': 'old_last_name'})
+        self.assertEqual(200, response.status_code)
+
+        c.logout()
+        c.login(username='username', password='old_pwd')
+
+        # corner case: null input
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd',
+                                                   'newpassword': '',
+                                                   'newpassword1': ''})
+        self.assertEqual(200, response.status_code)
+        user = User.objects.get(username='username')
+        self.assertTrue(user.check_password("old_pwd"))
+
+        # corner case2: null input
+        response=c.post('/change_password/', {'oldpassword': '',
+                                                   'newpassword': '1',
+                                                   'newpassword1': '1'})
+        self.assertEqual(200, response.status_code)
+        user = User.objects.get(username='username')
+        self.assertTrue(user.check_password("old_pwd"))
+
+        # corner case3: null input
+        response=c.post('/change_password/', {'oldpassword': '',
+                                                   'newpassword': '',
+                                                   'newpassword1': ''})
+        self.assertEqual(200, response.status_code)
+        user = User.objects.get(username='username')
+        self.assertTrue(user.check_password("old_pwd"))
+
+        # corner case4: When old password and new password are the same. -- this functionality may be changed later,
+        #  eg. do not let users to use their passwords that have been used once.
+        response=c.post('/change_password/', {'oldpassword': 'old_pwd',
+                                                   'newpassword': 'old_pwd',
+                                                   'newpassword1': 'old_pwd'})
+        self.assertEqual(302, response.status_code)
+        user = User.objects.get(username='username')
+        self.assertTrue(user.check_password("old_pwd"))
+
+
+
+class ChangeUserDataTest(TestCase):
+    '''
+    Test change_user_data() function in views.py
+    Users' data includes: First name, last name and email address.
+    We use Django built-in User Model.
+    '''
+
+    def test_user_data_change(self):
+        '''
+        basic test.
+        :return:
+        '''
+        response = self.client.post('/signup/', {'username': 'someday',
+                                                'password': 'past',
+                                                'email': 'old@past.com',
+                                                'first_name': 'past_FN',
+                                                'last_name': 'past_FN'})
+        self.assertEqual(200, response.status_code)
+
+        response = self.client.logout()
+
+
+        response = self.client.post('/login/', {'username': 'someday',
+                                                'password': 'past'})
+        self.assertEqual(200, response.status_code)
+
+        response=self.client.post('/change_user_data/', {'new_first_name': 'futureFN',
+                                                   'new_last_name': 'futureLN',
+                                                   'new_email': 'future@email.com'})
+        self.assertEqual(302, response.status_code)
+
+        response = self.client.get('/change_user_data_ok/')
+        self.assertEqual(200, response.status_code)
+
+        user = User.objects.get(username='someday')
+        self.assertEqual("futureFN",user.first_name)
+        self.assertEqual("futureLN",user.last_name)
+        self.assertEqual("future@email.com",user.email)
+
 
     def test_user_data1(self):
+        '''
+        Another method for basic tests.
+        :return:
+        '''
         c = Client()
 
         response = self.client.post('/signup/', {'username': 'username',
@@ -102,13 +341,16 @@ class UserDataTest(TestCase):
                                                 'last_name': 'old_last_name'})
         self.assertEqual(200, response.status_code)
 
+        c.logout()
         c.login(username='username', password='old_pwd')
 
         response=c.post('/change_user_data/', {'new_first_name': 'newFN',
                                                    'new_last_name': 'newLN',
                                                    'new_email': 'new@email.com'})
-        user = User.objects.get(username='username')
         self.assertEqual(302, response.status_code)
+
+        user = User.objects.get(username='username')
+
 
         self.assertEqual("newFN",user.first_name)
         self.assertEqual("newLN",user.last_name)
@@ -116,6 +358,11 @@ class UserDataTest(TestCase):
 
 
     def test_user_data(self):
+        '''
+        A complete procedure (including login and logout) to test change_user_data function.
+        :return:
+        '''
+
         # Initial account setup and signing
         response = self.client.post('/signup/', {'username': 'username',
                                                 'password': 'old_pwd',
@@ -124,9 +371,8 @@ class UserDataTest(TestCase):
                                                 'last_name': 'old_last_name'})
         self.assertEqual(200, response.status_code)
 
-        # user = User.objects.get(username='old_username')
-
-        response = self.client.post('/login/', {'username': 'old_username',
+        self.client.logout()
+        response = self.client.post('/login/', {'username': 'username',
                                                 'password': 'old_pwd'})
         self.assertEqual(200, response.status_code)
 
@@ -157,6 +403,9 @@ class UserDataTest(TestCase):
 
 # AboutTest ?
 class UrlsTest(TestCase):
+    '''
+    Some URL tests to test if some URL is working properly.
+    '''
 
     def test_login_page_exists(self):
         """

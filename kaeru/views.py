@@ -341,26 +341,35 @@ def signup_view(request):
 
 # @login_required()
 def change_user_data(request):
+    '''
+    A view to change users' personal data.
+    Users' data includes: First name, last name and email address.
+    Notice: we use Django built-in User Model.
+    :param request: Every view function takes one param, which is a instance of django.http.HttpRequest class.
+    :return:
+    '''
 
-    cookie = _get_csrf_cookie(request)
+    cookie = _get_csrf_cookie(request)  # Cookie to handle error messages.
 
     if not request.user.is_authenticated():
+        # A user must login first, or we should redirect the page to login page.
 
         cookie['error_message'] = "Please login first."
         return render_to_response('login.html', cookie)
 
     template = {}
     old_user = request.user
+
+    # We use Django built-in form API which is recommended by Django, rather than write a form from scatch.
     form = Change_user_data_Form(initial={'new_first_name': old_user.first_name,
                                           'new_last_name':old_user.last_name,
                                           'new_email':old_user.email
-                                          })
+                                          }) # initial: form's pre-fill value: what the original user data value is.
 
 
     if request.method=="POST":
         # form = change_user_data_Form(request.POST.copy())
 
-        # if form.is_valid():
         user = request.user
 
         new_first_name = request.POST.get("new_first_name") #form.cleaned_data["new_first_name"]
@@ -386,17 +395,22 @@ def change_user_data(request):
 # change password
 # @login_required
 def change_password(request):
+    '''
+    A function to enable a user to change his/her login password.
+    :param request: Every view function takes one param, which is a instance of django.http.HttpRequest class.
+    :return:
+    '''
 
-    cookie = _get_csrf_cookie(request)
+    cookie = _get_csrf_cookie(request)  # Cookie to handle error messages.
 
     if not request.user.is_authenticated():
-
+    # A user must login first, or we should redirect the page to login page.
         cookie['error_message'] = "Please login first."
         return render_to_response('login.html', cookie)
 
 
     template = {}
-    form = changepasswordForm()
+    form = changepasswordForm()  # We use Django built-in form API
 
     if request.method=="POST":
         form = changepasswordForm(request.POST.copy())
@@ -409,25 +423,25 @@ def change_password(request):
 
             user = auth.authenticate(username=username,password=oldpassword)
             if user: # origin pwd correct
-                if newpassword == newpassword1:
+                if newpassword == newpassword1:  # new pwd == confirmation
                     user.set_password(newpassword)
                     user.save()
 
                     return HttpResponseRedirect(reverse("kaeru.views.change_password_ok"))
 
-                else:
+                else:  # new pwd != confirmation
                     template["error_msg"] = 'New password and confirmation are not equal. Please try again.'
                     template["form"] = form
 
                     return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
             else:  # origin pwd wrong
-                if newpassword == newpassword1:
+                if newpassword == newpassword1:  # new pwd == confirmation
                     template["error_msg"] = 'The old password is wrong. Please try again.'
                     template["form"] = form
 
                     return render_to_response("changepassword.html",template,context_instance=RequestContext(request))
 
-                else:
+                else:  # new pwd != confirmation
                     template["error_msg"] = 'The old password is wrong. New password and confirmation are not equal. ' \
                                        'Please try again.'
                     template["form"] = form
