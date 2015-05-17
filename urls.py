@@ -39,7 +39,14 @@ urlpatterns = patterns('',
 
     url(r'^change_user_data/$', 'kaeru.views.change_user_data'),
     url(r'^change_user_data_ok/$', 'kaeru.views.change_user_data_ok'),
-
+    # Begin of Code - Tirth
+    url(r'^API_test/$' , 'kaeru.views.load_api_test'), 
+    url(r'^keepAliveProbe/$' , 'kaeru.views.keep_alive_probe'),
+    url(r'^create_test_tables/$' , 'kaeru.views.create_test_tables'),
+    url(r'^save_user_data/$' , 'kaeru.views.save_user_data'),
+    url(r'^get_all_type_data/$' , 'kaeru.views.get_all_type_data'),
+    url(r'^get_type_data_by_key/$' , 'kaeru.views.get_type_data_by_key'),
+    #End of Code - Tirth
 
 
 	url(r'^codes_submit/$' , 'kaeru.views.codes_submit_view'),

@@ -31,6 +31,7 @@ from itertools import chain
 
 import os
 import kaeru.utils
+import sqlite3
 
 # These pages should live in 'kaeru/templates/about/'
 # Alternatively, these names could live in a database
@@ -55,6 +56,117 @@ def documentation_view(request):
 
 def people_view(request):
     return render_to_response('people.html', {})
+
+#Begin of Code - Tirth
+
+ 
+def load_api_test(request):
+    return render_to_response('NewFile.html',{})
+
+#get_all_ser_data could be used to load all the data for te logged in user
+#from the database. 
+def get_all_user_data(request):
+    return render_to_response('index.html',{})
+
+def keep_alive_probe(request):
+    if request.is_ajax():
+        message = 'AJAX'
+    else:
+        message = 'NO AJAX'
+    html = "<p>..keepalive hit ..</p>"
+    return HttpResponse(html)
+
+def create_test_tables(request):
+    html = "<p>create_table</p>"
+    connection_lite = sqlite3.connect('elements.db')
+    cursor_lite = connection_lite.cursor()
+    #cursor_lite.execute("create table Friend(username TEXT, password TEXT)")
+    #cursor_lite.execute("insert into Friend values ('test3','test4')")
+    myRows = cursor_lite.execute("select * from Friend ")
+    html += "no of columns==>" 
+    for rows_lite in myRows:
+        html += rows_lite[0]
+    
+    connection_lite.commit()    
+    connection_lite.close()
+
+    
+    return HttpResponse(html)
+
+def save_user_data(request):
+    insertString = request.GET.get('query',None)
+    tableName = request.GET.get('table',None)
+    insertItems = insertString.split(',')
+    if tableName is None:
+        return HttpResponse('TableName not found')
+    interimQuery = 'INSERT into '+tableName+' values ('
+    for item in insertItems:
+        if(item != 'dummy'): #dummmy will be the last element
+            interimQuery += "'"+item + "',"
+
+    finalQuery = interimQuery[:interimQuery.rfind(',')]  
+    finalQuery += ")"
+    #create DB connections
+    connection_lite = sqlite3.connect('elements.db')
+    cursor_lite = connection_lite.cursor()
+    cursor_lite.execute(finalQuery)
+    connection_lite.commit()
+    
+    returnStr = "<p>Successful</p>"
+    connection_lite.close()
+    return HttpResponse(returnStr)      
+
+def get_all_type_data(request):
+    tableName = request.GET.get('table',None)
+    connection_lite = sqlite3.connect('elements.db')
+    cursor_lite = connection_lite.cursor()
+    if tableName is None:
+        return HttpResponse('TableName not found')
+    
+    queryString = "SELECT * from "+tableName
+    cursor_lite.execute(queryString)
+    resultStr = ""
+    i = 0
+   
+    while True:
+        r = cursor_lite.fetchone()
+        
+        if r is None:
+            break
+        else:
+
+            for x in range(0,len(r)):
+                resultStr += r[x] + ","
+            resultStr = resultStr[:resultStr.rfind(',')]
+            resultStr += '$'
+
+    returnStr = resultStr[:resultStr.rfind('$')]
+    returnStr += ""
+
+    #connection_lite.close()
+    return HttpResponse(returnStr)
+
+def get_type_data_by_key(request):
+    tableName = request.GET.get('table',None)
+    keyName = request.GET.get('key',None)
+    keyValue = request.GET.get('keyValue',None)
+    connection_lite = sqlite3.connect('elements.db')
+    cursor_lite = connection_lite.cursor()
+    if tableName is None:
+        return HttpResponse('TableName not found')
+    
+    queryString = "SELECT * from "+tableName+" where "+keyName+"='"+keyValue+"'"
+    cursor_lite.execute(queryString)
+    #while True:
+    r = cursor_lite.fetchone()
+
+    returnStr = ""
+    for  x in range(0,len(r)):
+        returnStr += r[x]+","
+    returnStr = returnStr[:returnStr.rfind(',')]
+    #returnStr = "test"
+    return HttpResponse(returnStr)
+#End of Code - Tirth 
 
 @login_required
 def codes_view(request):
